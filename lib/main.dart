@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         Constants.GameSetupPageRouteName: (context) => GameSetupPage(),
         Constants.StatisticsPageRouteName: (context) => StatisticsPage(),
-        Constants.GamePageRouteName: (context) => GamePage(),
+        Constants.GamePageRouteName: (context) => GamePage(5,5),
       },
       home: MainPage(),
     );

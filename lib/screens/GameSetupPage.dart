@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hangman/constants/constants.dart';
+import 'package:hangman/screens/GamePage.dart';
 
 class GameSetupPage extends StatefulWidget {
   @override
@@ -61,7 +62,7 @@ class _GameSetupPageState extends State<GameSetupPage> {
               },
             ),
             ElevatedButton(onPressed: (){
-              Navigator.pushNamed(context, Constants.GamePageRouteName);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => GamePage(_guessCount.round(),_letterCount.round())));
             }, child: Text("Play"))
           ],
         ),
