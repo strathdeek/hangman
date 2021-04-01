@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hangman/constants/constants.dart';
+import 'package:hangman/screens/GameSetupPage.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -6,30 +8,34 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  void _navigateToStartGame(){
-    print("tapped start game");
+  void _navigateToStartGame() {
+    Navigator.pushNamed(context, Constants.GameSetupPageRouteName);
   }
+
+  void _navigateToStatistics() {
+    Navigator.pushNamed(context, Constants.StatisticsPageRouteName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber,
-        title: Text("Hangman"),
+        title: Text("HANGMAN"),
       ),
       body: Container(
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(onPressed: _navigateToStartGame, child: Text("New Game")),
-            ElevatedButton(onPressed: _navigateToStatistics, child: Text("Statistics"))
-          ],
-        )
-      ),
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                  onPressed: _navigateToStartGame, child: Text("New Game")),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                  onPressed: _navigateToStatistics, child: Text("Statistics"))
+            ],
+          )),
     );
-  }
-
-  void _navigateToStatistics() {
-    print("tapped statistics");
   }
 }

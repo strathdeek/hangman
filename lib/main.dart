@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hangman/constants/constants.dart';
+import 'package:hangman/screens/GamePage.dart';
+import 'package:hangman/screens/GameSetupPage.dart';
+import 'package:hangman/screens/StatisticsPage.dart';
 
 import 'screens/MainPage.dart';
 
@@ -22,8 +26,17 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(foregroundColor: MaterialStateProperty.resolveWith((states) => Colors.black))
+        )
+
       ),
+      routes: {
+        Constants.GameSetupPageRouteName: (context) => GameSetupPage(),
+        Constants.StatisticsPageRouteName: (context) => StatisticsPage(),
+        Constants.GamePageRouteName: (context) => GamePage(),
+      },
       home: MainPage(),
     );
   }
