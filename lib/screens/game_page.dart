@@ -11,48 +11,71 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  _GamePageState(this._totalGuesses, int wordLength) : super(){
+  _GamePageState(this._totalGuesses, int wordLength) : super() {
     _loadTargetWord(wordLength);
   }
 
   final guessController = TextEditingController();
+  final guessFocusNode = FocusNode();
 
   int _totalGuesses;
   int _currentGuesses = 0;
   String _errorText = "";
   String _targetWord = "words".toUpperCase();
-  String _currentGuess;
+  String _currentGuess = "";
   String get _displayWord => _targetWord.characters
       .map((char) => _lettersGuessed.contains(char) ? char : "_")
       .join();
   List<String> _lettersGuessed = <String>[];
 
   Future<void> _loadTargetWord(int numberOfLetters) async {
-    var targetWord = await getIt<DictionaryService>().getRandomWord(numberOfLetters);
+    var targetWord =
+        await getIt<DictionaryService>().getRandomWord(numberOfLetters);
     print(targetWord);
     setState(() {
       _targetWord = targetWord.toUpperCase();
     });
   }
 
-  void _trimTextInput(String input){
+  void _trimTextInput(String input) {
+    if (input?.isEmpty ?? true) {
+      return;
+    }
     var trimmedInput = input.characters.last.toUpperCase();
     guessController.clear();
-    guessController.value = TextEditingValue(text: trimmedInput, selection: TextSelection.fromPosition(TextPosition(offset: 1)));
+    guessController.value = TextEditingValue(
+        text: trimmedInput,
+        selection: TextSelection.fromPosition(TextPosition(offset: 1)));
     setState(() {
       _currentGuess = trimmedInput;
     });
-
   }
 
   void _submitGuess() {
     guessController.clear();
-    if (_lettersGuessed.contains(_currentGuess)) {
-      setState(() {
-        _errorText = "'${_currentGuess.toUpperCase()}' has already been guessed.";
-      });
+
+    if (_currentGuess.isEmpty) {
       return;
     }
+
+    if (!RegExp("[A-Z]").hasMatch(_currentGuess)) {
+      setState(() {
+        _errorText =
+            "'${_currentGuess.toUpperCase()}' is not a valid guess.";
+      });
+      guessFocusNode.requestFocus();
+      return;
+    }
+
+    if (_lettersGuessed.contains(_currentGuess)) {
+      setState(() {
+        _errorText =
+            "'${_currentGuess.toUpperCase()}' has already been guessed.";
+      });
+      guessFocusNode.requestFocus();
+      return;
+    }
+
     setState(() {
       _errorText = "";
       _lettersGuessed.add(_currentGuess);
@@ -62,15 +85,17 @@ class _GamePageState extends State<GamePage> {
     });
     if (_currentGuesses == _totalGuesses || _targetWord == _displayWord) {
       _endGame();
+    } else {
+      guessFocusNode.requestFocus();
     }
   }
 
   Future<void> _endGame() async {
     var isWinner = _displayWord == _targetWord;
-    var titleText = isWinner ? "Congratulations!" : "Maybe next time";
+    var titleText = isWinner ? "Congratulations!" : "You Lost";
     var contentText = isWinner
         ? "You won! Would you like to play again?"
-        : "You lost. Would you like to play again?";
+        : "The word was $_targetWord. Would you like to play again?";
 
     return showDialog(
         context: context,
@@ -115,55 +140,81 @@ class _GamePageState extends State<GamePage> {
         ),
       ),
       body: Container(
-        alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(horizontal: 50),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(_displayWord.characters.join(" ")),
-            Text("Guessed: ${_lettersGuessed.join(", ")}"),
-            Text("Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
-            SizedBox(
-              height: 50,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 70,
-                  width: 50,
-                  alignment: Alignment.center,
-                  child: TextField(
-                    buildCounter: (BuildContext context,
-                            {int currentLength,
-                            int maxLength,
-                            bool isFocused}) =>
-                        null,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(bottom: 35),
-                      border: OutlineInputBorder(),
-                    ),
-                    showCursor: false,
-                    onChanged: _trimTextInput,
-                    style: TextStyle(fontSize: 22),
-                    controller: guessController,
+          padding: EdgeInsets.symmetric(horizontal: 50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Spacer(),
+              Column(
+                children: [
+                  Text(
+                    _displayWord.characters.join(" "),
+                    style: TextStyle(fontSize: 30),
                   ),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                ElevatedButton(
-                  onPressed: _submitGuess,
-                  child: Text("Guess"),
-                ),
-              ],
-            ),
-            Text(_errorText, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),)
-          ],
-        ),
-      ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text("Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
+                ],
+              ),
+              Spacer(),
+              Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 70,
+                        width: 50,
+                        alignment: Alignment.center,
+                        child: TextField(
+                          buildCounter: (BuildContext context,
+                                  {int currentLength,
+                                  int maxLength,
+                                  bool isFocused}) =>
+                              null,
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(bottom: 35),
+                            border: OutlineInputBorder(),
+                          ),
+                          showCursor: false,
+                          onChanged: _trimTextInput,
+                          style: TextStyle(fontSize: 22),
+                          controller: guessController,
+                          onSubmitted: (String input) => _submitGuess(),
+                          focusNode: guessFocusNode,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      ElevatedButton(
+                        onPressed: _submitGuess,
+                        child: Text("Guess"),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    _errorText,
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Guessed: ${_lettersGuessed.join(", ")}",
+                    style: TextStyle(fontSize: 25),
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                ],
+              )
+            ],
+          )),
     );
   }
 }
