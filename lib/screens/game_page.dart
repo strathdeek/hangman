@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hangman/services/dictionary/dictionary_service.dart';
+import 'package:hangman/services/service_locater.dart';
 
 class GamePage extends StatefulWidget {
   final int guesses;
@@ -9,13 +11,14 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  _GamePageState(this._totalGuesses, this._wordLength) : super();
+  _GamePageState(this._totalGuesses, int wordLength) : super(){
+    _loadTargetWord(wordLength);
+  }
 
   final guessController = TextEditingController();
 
   int _totalGuesses;
   int _currentGuesses = 0;
-  int _wordLength;
   String _errorText = "";
   String _targetWord = "words".toUpperCase();
   String _currentGuess;
@@ -23,6 +26,14 @@ class _GamePageState extends State<GamePage> {
       .map((char) => _lettersGuessed.contains(char) ? char : "_")
       .join();
   List<String> _lettersGuessed = <String>[];
+
+  Future<void> _loadTargetWord(int numberOfLetters) async {
+    var targetWord = await getIt<DictionaryService>().getRandomWord(numberOfLetters);
+    print(targetWord);
+    setState(() {
+      _targetWord = targetWord.toUpperCase();
+    });
+  }
 
   void _trimTextInput(String input){
     var trimmedInput = input.characters.last.toUpperCase();
@@ -36,9 +47,6 @@ class _GamePageState extends State<GamePage> {
 
   void _submitGuess() {
     guessController.clear();
-    print(_currentGuess);
-    print(_lettersGuessed);
-    print(_lettersGuessed.contains(_currentGuess));
     if (_lettersGuessed.contains(_currentGuess)) {
       setState(() {
         _errorText = "'${_currentGuess.toUpperCase()}' has already been guessed.";
@@ -86,6 +94,7 @@ class _GamePageState extends State<GamePage> {
 
   void _resetGame() {
     Navigator.of(context).pop();
+    _loadTargetWord(_targetWord.length);
     setState(() {
       _currentGuesses = 0;
       _lettersGuessed = <String>[];

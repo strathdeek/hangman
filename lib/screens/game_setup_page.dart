@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hangman/constants/constants.dart';
 import 'package:hangman/screens/game_page.dart';
+import 'package:hangman/services/dictionary/dictionary_service.dart';
+import 'package:hangman/services/service_locater.dart';
 
 class GameSetupPage extends StatefulWidget {
   @override
@@ -10,6 +12,22 @@ class GameSetupPage extends StatefulWidget {
 class _GameSetupPageState extends State<GameSetupPage> {
   double _guessCount = 5;
   double _letterCount = 5;
+  int _minLetterCount = 1;
+  int _maxLetterCount = 10;
+
+  @override void initState() {
+    super.initState();
+    fetchDictionaryValues();
+  }
+
+  Future<void> fetchDictionaryValues() async {
+    var min = await getIt<DictionaryService>().getShortestWordLength();
+    var max = await getIt<DictionaryService>().getLongestWordLength();
+    setState(() {
+      _minLetterCount = min;
+      _maxLetterCount = max;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +44,12 @@ class _GameSetupPageState extends State<GameSetupPage> {
             Row(children: [
               Text(
                 "Number of Guesses: ",
-                textScaleFactor: 1.5,
+                style: TextStyle(fontSize: 25),
               ),
-              Text(_guessCount.round().toString(), textScaleFactor: 1.5)
+              Text(
+                _guessCount.round().toString(),
+                style: TextStyle(fontSize: 25),
+              )
             ]),
             Slider(
               value: _guessCount,
@@ -45,14 +66,17 @@ class _GameSetupPageState extends State<GameSetupPage> {
             Row(children: [
               Text(
                 "Number of Letters: ",
-                textScaleFactor: 1.5,
+                style: TextStyle(fontSize: 25),
               ),
-              Text(_letterCount.round().toString(), textScaleFactor: 1.5)
+              Text(
+                _letterCount.round().toString(),
+                style: TextStyle(fontSize: 25),
+              )
             ]),
             Slider(
               value: _letterCount,
-              max: 10,
-              min: 1,
+              max: _maxLetterCount.toDouble(),
+              min: _minLetterCount.toDouble(),
               divisions: 10,
               label: _letterCount.round().toString(),
               onChanged: (double value) {
@@ -61,9 +85,15 @@ class _GameSetupPageState extends State<GameSetupPage> {
                 });
               },
             ),
-            ElevatedButton(onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => GamePage(_guessCount.round(),_letterCount.round())));
-            }, child: Text("Play"))
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => GamePage(
+                              _guessCount.round(), _letterCount.round())));
+                },
+                child: Text("Play"))
           ],
         ),
       ),

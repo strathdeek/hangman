@@ -30,7 +30,7 @@ class EnglishDictionaryService extends DictionaryService {
     }
     var response = await http.get(Uri.https("raw.githubusercontent.com",
         "mrdziuban/Hangman/master/dictionary.txt"));
-    dictionary = response.body.split("\n");
+    dictionary = response.body.split("\n").where((String word) => word.isNotEmpty).toList();
   }
 
   @override
@@ -48,6 +48,7 @@ class EnglishDictionaryService extends DictionaryService {
       await initializeDictionary();
     }
     dictionary.sort((a,b)=>a.length.compareTo(b.length)); 
+    print(dictionary.first);
     return dictionary.first.length;
   }
 }
