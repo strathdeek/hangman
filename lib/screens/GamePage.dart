@@ -16,25 +16,43 @@ class _GamePageState extends State<GamePage> {
   int _totalGuesses;
   int _currentGuesses = 0;
   int _wordLength;
-  String _targetWord = "words";
+  String _errorText = "";
+  String _targetWord = "words".toUpperCase();
   String _currentGuess;
   String get _displayWord => _targetWord.characters
       .map((char) => _lettersGuessed.contains(char) ? char : "_")
       .join();
   List<String> _lettersGuessed = <String>[];
 
+  void _trimTextInput(String input){
+    var trimmedInput = input.characters.last.toUpperCase();
+    guessController.clear();
+    guessController.value = TextEditingValue(text: trimmedInput, selection: TextSelection.fromPosition(TextPosition(offset: 1)));
+    setState(() {
+      _currentGuess = trimmedInput;
+    });
+
+  }
+
   void _submitGuess() {
     guessController.clear();
+    print(_currentGuess);
+    print(_lettersGuessed);
+    print(_lettersGuessed.contains(_currentGuess));
     if (_lettersGuessed.contains(_currentGuess)) {
-      //handle error here
+      setState(() {
+        _errorText = "'${_currentGuess.toUpperCase()}' has already been guessed.";
+      });
+      return;
     }
     setState(() {
+      _errorText = "";
       _lettersGuessed.add(_currentGuess);
       if (!_targetWord.contains(_currentGuess)) {
         _currentGuesses++;
       }
     });
-    if(_currentGuesses == _totalGuesses || _targetWord == _displayWord){
+    if (_currentGuesses == _totalGuesses || _targetWord == _displayWord) {
       _endGame();
     }
   }
@@ -99,16 +117,40 @@ class _GamePageState extends State<GamePage> {
             SizedBox(
               height: 50,
             ),
-            TextField(
-              maxLength: 1,
-              onChanged: (String value) {
-                setState(() {
-                  _currentGuess = value;
-                });
-              },
-              controller: guessController,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 70,
+                  width: 50,
+                  alignment: Alignment.center,
+                  child: TextField(
+                    buildCounter: (BuildContext context,
+                            {int currentLength,
+                            int maxLength,
+                            bool isFocused}) =>
+                        null,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(bottom: 35),
+                      border: OutlineInputBorder(),
+                    ),
+                    showCursor: false,
+                    onChanged: _trimTextInput,
+                    controller: guessController,
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                ElevatedButton(
+                  onPressed: _submitGuess,
+                  child: Text("Guess"),
+                ),
+              ],
             ),
-            ElevatedButton(onPressed: _submitGuess, child: Text("Guess")),
+            Text(_errorText, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),)
           ],
         ),
       ),
