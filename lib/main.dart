@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hangman/constants/constants.dart';
-import 'package:hangman/screens/GamePage.dart';
-import 'package:hangman/screens/GameSetupPage.dart';
-import 'package:hangman/screens/StatisticsPage.dart';
+import 'package:hangman/screens/game_page.dart';
+import 'package:hangman/screens/game_setup_page.dart';
+import 'package:hangman/screens/statistics_page.dart';
+import 'package:hangman/services/service_locater.dart';
 
-import 'screens/MainPage.dart';
+import 'screens/main_page.dart';
 
 void main() {
+  setupServiceLocater();
   runApp(MyApp());
 }
 
@@ -17,15 +19,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hangman',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.amber,
         textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(foregroundColor: MaterialStateProperty.resolveWith((states) => Colors.black))

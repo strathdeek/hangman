@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hangman/constants/constants.dart';
-import 'package:hangman/screens/GameSetupPage.dart';
+import 'package:hangman/services/dictionary/dictionary_service.dart';
+import 'package:hangman/services/service_locater.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -33,7 +34,7 @@ class _MainPageState extends State<MainPage> {
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: _navigateToStatistics, child: Text("Statistics"))
+                  onPressed: _navigateToStatistics, child: Text("Statistics")),
             ],
           )),
     );

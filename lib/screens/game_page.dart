@@ -138,6 +138,7 @@ class _GamePageState extends State<GamePage> {
                     ),
                     showCursor: false,
                     onChanged: _trimTextInput,
+                    style: TextStyle(fontSize: 22),
                     controller: guessController,
                   ),
                 ),

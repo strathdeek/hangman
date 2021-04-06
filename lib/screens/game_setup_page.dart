@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hangman/constants/constants.dart';
-import 'package:hangman/screens/GamePage.dart';
+import 'package:hangman/screens/game_page.dart';
 
 class GameSetupPage extends StatefulWidget {
   @override
