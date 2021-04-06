@@ -14,9 +14,13 @@ class _GamePageState extends State<GamePage> {
   final guessController = TextEditingController();
 
   int _totalGuesses;
+  int _currentGuesses = 0;
   int _wordLength;
   String _targetWord = "words";
   String _currentGuess;
+  String get _displayWord => _targetWord.characters
+      .map((char) => _lettersGuessed.contains(char) ? char : "_")
+      .join();
   List<String> _lettersGuessed = <String>[];
 
   void _submitGuess() {
@@ -27,9 +31,51 @@ class _GamePageState extends State<GamePage> {
     setState(() {
       _lettersGuessed.add(_currentGuess);
       if (!_targetWord.contains(_currentGuess)) {
-        _totalGuesses--;
+        _currentGuesses++;
       }
     });
+    if(_currentGuesses == _totalGuesses || _targetWord == _displayWord){
+      _endGame();
+    }
+  }
+
+  Future<void> _endGame() async {
+    var isWinner = _displayWord == _targetWord;
+    var titleText = isWinner ? "Congratulations!" : "Maybe next time";
+    var contentText = isWinner
+        ? "You won! Would you like to play again?"
+        : "You lost. Would you like to play again?";
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(titleText),
+            content: Text(contentText),
+            actions: [
+              TextButton(
+                child: Text("Play Again"),
+                onPressed: _resetGame,
+              ),
+              TextButton(
+                child: Text("Exit"),
+                onPressed: _navigateHome,
+              ),
+            ],
+          );
+        });
+  }
+
+  void _resetGame() {
+    Navigator.of(context).pop();
+    setState(() {
+      _currentGuesses = 0;
+      _lettersGuessed = <String>[];
+    });
+  }
+
+  void _navigateHome() {
+    Navigator.popUntil(context, (route) => route.isFirst);
   }
 
   @override
@@ -38,9 +84,7 @@ class _GamePageState extends State<GamePage> {
       appBar: AppBar(
         leading: TextButton(
           child: Text("Quit"),
-          onPressed: () {
-            Navigator.popUntil(context, (route) => route.isFirst);
-          },
+          onPressed: _navigateHome,
         ),
       ),
       body: Container(
@@ -49,9 +93,9 @@ class _GamePageState extends State<GamePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(_targetWord.characters.map((char) =>_lettersGuessed.contains(char)? char : "_").join(' ')),
+            Text(_displayWord.characters.join(" ")),
             Text("Guessed: ${_lettersGuessed.join(", ")}"),
-            Text("Guesses Remaining: ${_totalGuesses}"),
+            Text("Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
             SizedBox(
               height: 50,
             ),
@@ -64,7 +108,7 @@ class _GamePageState extends State<GamePage> {
               },
               controller: guessController,
             ),
-            ElevatedButton(onPressed: _submitGuess, child: Text("Guess"))
+            ElevatedButton(onPressed: _submitGuess, child: Text("Guess")),
           ],
         ),
       ),
