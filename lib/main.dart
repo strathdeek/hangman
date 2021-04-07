@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hangman/bloc/simple_bloc_observer.dart';
 import 'package:hangman/constants/constants.dart';
 import 'package:hangman/screens/game_page.dart';
 import 'package:hangman/screens/game_setup_page.dart';
 import 'package:hangman/screens/statistics_page.dart';
 import 'package:hangman/services/service_locater.dart';
 
+import 'bloc/blocs.dart';
 import 'screens/main_page.dart';
 
 void main() {
   setupServiceLocater();
-  runApp(MyApp());
+  Bloc.observer = SimpleBlocObserver();
+  // runApp(MyApp());
+  runApp(BlocProvider(create: (context){
+    return GameResultBloc()
+    ..add(GameResultsLoadSuccessEvent());
+  },
+  child: MyApp(),));
+
 }
 
 class MyApp extends StatelessWidget {
