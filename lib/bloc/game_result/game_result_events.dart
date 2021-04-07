@@ -8,7 +8,11 @@ abstract class GameResultEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GameResultsLoadSuccessEvent extends GameResultEvent {}
+class GameResultsLoadSuccessEvent extends GameResultEvent {
+  GameResultsLoadSuccessEvent() {
+    print("made me!");
+  }
+}
 
 class GameResultAdded extends GameResultEvent {
   final GameResult gameResult;

@@ -24,6 +24,7 @@ class GameResultBloc extends Bloc<GameResultEvent, GameResultsState> {
   Stream<GameResultsState> _mapGameResultsLoadedToState() async* {
     try {
       final gameResults = await gameResultsDataService.get();
+      print("gameResults: $gameResults");
       yield GameResultsLoadSuccess(gameResults);
     } catch (e) {
       yield GameResultsLoadFailure();
@@ -32,8 +33,9 @@ class GameResultBloc extends Bloc<GameResultEvent, GameResultsState> {
 
   Stream<GameResultsState> _mapGameResultAddedToState(GameResultAdded event) async* {
     if(state is GameResultsLoadSuccess){
-      final List<GameResult> updatedResults = (state as GameResultsLoadSuccess).gameResults
+      final List<GameResult> updatedResults = List.from((state as GameResultsLoadSuccess).gameResults)
         ..add(event.gameResult);
+        print(updatedResults);
       yield GameResultsLoadSuccess(updatedResults);
       _saveGameResults(updatedResults);
     }
@@ -41,7 +43,7 @@ class GameResultBloc extends Bloc<GameResultEvent, GameResultsState> {
 
   Stream<GameResultsState> _mapGameResultDeletedToState(GameResultDeleted event) async* {
     if (state is GameResultsLoadSuccess) {
-      final List<GameResult> updatedResults = (state as GameResultsLoadSuccess).gameResults
+      final List<GameResult> updatedResults = List.from((state as GameResultsLoadSuccess).gameResults)
         ..remove(event.gameResult);
       yield GameResultsLoadSuccess(updatedResults);
       _saveGameResults(updatedResults);
@@ -58,7 +60,7 @@ class GameResultBloc extends Bloc<GameResultEvent, GameResultsState> {
     }
   }
 
-  Future<void> _saveGameResults(List<GameResult> gameResults){
-    getIt<GameResultDataService>().save(gameResults);
+  Future<void> _saveGameResults(List<GameResult> gameResults) async {
+    return getIt<GameResultDataService>().save(gameResults);
   }
 }
