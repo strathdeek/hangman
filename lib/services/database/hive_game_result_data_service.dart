@@ -8,6 +8,7 @@ class HiveGameResultDataService extends GameResultDataService {
   HiveGameResultDataService() {
     gameResultBox = Hive.box(Constants.HiveGameResultBoxKey);
   }
+  
   @override
   Future<void> add(GameResult gameResult) async {
     await gameResultBox.put(gameResult.id, gameResult);
@@ -21,7 +22,22 @@ class HiveGameResultDataService extends GameResultDataService {
   @override
   Future<void> save(List<GameResult> newGameResults) async {
     newGameResults.forEach((game) {
-      gameResultBox.put(game.id,game);
+      gameResultBox.put(game.id, game);
     });
+  }
+
+  @override
+  Future<void> delete(GameResult gameResult) {
+    return gameResultBox.delete(gameResult.id);
+  }
+
+  @override
+  Future<void> deleteAll() {
+    return gameResultBox.deleteAll(gameResultBox.keys);
+  }
+
+  @override
+  Future<void> update(GameResult gameResult) {
+    return gameResultBox.put(gameResult.id, gameResult);
   }
 }

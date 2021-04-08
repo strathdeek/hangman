@@ -17,7 +17,7 @@ void main() async {
 
   runApp(BlocProvider(
     create: (context) {
-      return GameResultBloc()..add(new GameResultsLoadSuccessEvent());
+      return GameResultBloc()..add(new GameResultsLoad());
     },
     child: MyApp(),
   ));

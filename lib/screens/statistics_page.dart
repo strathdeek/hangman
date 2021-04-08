@@ -8,6 +8,32 @@ import 'package:intl/intl.dart';
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({Key key}) : super(key: key);
 
+  void _confirmDeleteStatistics(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Permanently Delete All Data"),
+            content: Text(
+                "By clicking \"delete\", your data will be irreversibly deleted. Are you sure this is what you want?"),
+            actions: [
+              TextButton(
+                child: Text("Delete"),
+                onPressed: () {
+                  BlocProvider.of<GameResultBloc>(context)
+                      .add(GameResultDeleteAll());
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: Text("Exit"),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameResultBloc, GameResultsState>(
@@ -17,11 +43,20 @@ class StatisticsPage extends StatelessWidget {
       }
       final gameResults = (state as GameResultsLoadSuccess).gameResults
         ..sort((a, b) => b.time.compareTo(a.time));
+
       return Scaffold(
         appBar: AppBar(
+            actions: [
+              IconButton(
+                  icon: Icon(
+                    Icons.delete_forever,
+                    size: 35,
+                  ),
+                  onPressed: () => _confirmDeleteStatistics(context))
+            ],
             title: Container(
-          child: Text("Statistics"),
-        )),
+              child: Text("Statistics"),
+            )),
         body: Container(
           padding: EdgeInsets.all(50),
           child: Column(
@@ -57,7 +92,7 @@ class StatisticsPage extends StatelessWidget {
 }
 
 class StatisticsSectionHeader extends StatelessWidget {
-  String headerLabel;
+  final String headerLabel;
   StatisticsSectionHeader(this.headerLabel);
   final TextStyle _headerTextStyle =
       TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
@@ -83,21 +118,31 @@ class StatisticsSummaryWidget extends StatelessWidget {
 
   StatisticsSummaryWidget(this.gameResults);
 
-  double _getWinRate() {
+  String _getWinRate() {
+    if (gameResults.isEmpty) {
+      return "-";
+    }
     var totalWins = gameResults.where((game) => game.didWin).length;
-    return totalWins / gameResults.length;
+    var winRate = totalWins / gameResults.length;
+    return "${winRate.toStringAsPrecision(2)}%";
   }
 
-  double _getAverageDifficulty() {
+  String _getAverageDifficulty() {
+    if (gameResults.isEmpty) {
+      return "-";
+    }
     var lengths = gameResults.map((e) => e.word.length);
     var sumOfLengths = lengths.reduce((value, element) => value + element);
-    return sumOfLengths / gameResults.length;
+    return (sumOfLengths / gameResults.length).toStringAsPrecision(2);
   }
 
-  double _getAverageGuesses() {
+  String _getAverageGuesses() {
+    if (gameResults.isEmpty) {
+      return "-";
+    }
     var guesses = gameResults.map((e) => e.numberOfGuesses);
     var sumOfLengths = guesses.reduce((value, element) => value + element);
-    return sumOfLengths / gameResults.length;
+    return (sumOfLengths / gameResults.length).toStringAsPrecision(2);
   }
 
   @override
@@ -106,6 +151,7 @@ class StatisticsSummaryWidget extends StatelessWidget {
       child: Container(
         height: 130,
         padding: EdgeInsets.all(15),
+        alignment: Alignment.center,
         child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -116,7 +162,7 @@ class StatisticsSummaryWidget extends StatelessWidget {
               Text("${gameResults.length}"),
               SizedBox(height: 15),
               Text("Win Rate", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("${_getWinRate().toStringAsPrecision(2)}%")
+              Text(_getWinRate())
             ],
           ),
           SizedBox(width: 25),
@@ -129,12 +175,12 @@ class StatisticsSummaryWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text("${_getAverageDifficulty().toStringAsPrecision(2)}"),
+              Text(_getAverageDifficulty()),
               SizedBox(height: 15),
               Text("Average Guesses",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("${_getAverageGuesses().toStringAsPrecision(2)}"),
+              Text(_getAverageGuesses()),
             ],
           )
         ]),
@@ -209,9 +255,18 @@ class StatisticsBarChart extends StatelessWidget {
         child: Container(
       padding: EdgeInsets.all(15),
       height: 150,
-      child: BarChart(
-        _getBarChartData(),
-      ),
+      child: gameResults.isNotEmpty
+          ? BarChart(
+              _getBarChartData(),
+            )
+          : Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("No Data"),
+                ],
+              ),
+            ),
     ));
   }
 }
@@ -235,10 +290,8 @@ class StatisticsListItemWidget extends StatelessWidget {
                   Text("Word", style: TextStyle(fontWeight: FontWeight.bold)),
                   Text("${gameResult.word}"),
                   SizedBox(height: 15),
-                  Text("Date",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text(
-                      "${DateFormat.MMMd().format(gameResult.time)}")
+                  Text("Date", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("${DateFormat.MMMd().format(gameResult.time)}")
                 ],
               ),
               SizedBox(width: 45),
@@ -257,8 +310,11 @@ class StatisticsListItemWidget extends StatelessWidget {
                     child: Wrap(
                       direction: Axis.horizontal,
                       children: gameResult.guesses.characters
-                          .map((c) =>
-                              Text(c, style: TextStyle(color: gameResult.word.contains(c) ? Colors.green : Colors.red) ))
+                          .map((c) => Text(c,
+                              style: TextStyle(
+                                  color: gameResult.word.contains(c)
+                                      ? Colors.green
+                                      : Colors.red)))
                           .toList(),
                     ),
                   ),

@@ -8,9 +8,8 @@ abstract class GameResultEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GameResultsLoadSuccessEvent extends GameResultEvent {
-  GameResultsLoadSuccessEvent() {
-  }
+class GameResultsLoad extends GameResultEvent {
+  GameResultsLoad();
 }
 
 class GameResultAdded extends GameResultEvent {
@@ -48,3 +47,6 @@ class GameResultDeleted extends GameResultEvent {
   @override
   String toString() => 'TodoDeleted { gameResult: $gameResult }';
 }
+
+class GameResultDeleteAll extends GameResultEvent{}
+

@@ -19,5 +19,23 @@ class MockGameResultDataService extends GameResultDataService{
     gameResults.addAll(newGameResults);
   }
 
+  @override
+  Future<void> delete(GameResult gameResult) {
+      // TODO: implement delete
+      throw UnimplementedError();
+    }
+  
+    @override
+    Future<void> deleteAll() {
+      // TODO: implement deleteAll
+      throw UnimplementedError();
+    }
+  
+    @override
+    Future<void> update(GameResult gameResult) {
+    // TODO: implement update
+    throw UnimplementedError();
+  }
+
 
 }
