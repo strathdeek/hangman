@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hangman/bloc/blocs.dart';
+import 'package:hangman/bloc/game_result/game_result_bloc.dart';
+import 'package:hangman/models/game_result.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';
 import 'package:hangman/services/service_locater.dart';
 
@@ -92,6 +96,9 @@ class _GamePageState extends State<GamePage> {
 
   Future<void> _endGame() async {
     var isWinner = _displayWord == _targetWord;
+
+    BlocProvider.of<GameResultBloc>(context).add(GameResultAdded(new GameResult(_targetWord, _lettersGuessed.join(), isWinner, _totalGuesses, DateTime.now(), UniqueKey().toString())));
+
     var titleText = isWinner ? "Congratulations!" : "You Lost";
     var contentText = isWinner
         ? "You won! Would you like to play again?"

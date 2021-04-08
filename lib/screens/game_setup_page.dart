@@ -77,7 +77,7 @@ class _GameSetupPageState extends State<GameSetupPage> {
               value: _letterCount,
               max: _maxLetterCount.toDouble(),
               min: _minLetterCount.toDouble(),
-              divisions: 10,
+              divisions: _maxLetterCount,
               label: _letterCount.round().toString(),
               onChanged: (double value) {
                 setState(() {
