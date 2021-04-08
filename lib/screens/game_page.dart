@@ -97,7 +97,7 @@ class _GamePageState extends State<GamePage> {
   Future<void> _endGame() async {
     var isWinner = _displayWord == _targetWord;
 
-    BlocProvider.of<GameResultBloc>(context).add(GameResultAdded(new GameResult(_targetWord, _lettersGuessed.join(), isWinner, _currentGuesses, DateTime.now(), UniqueKey().toString())));
+    BlocProvider.of<GameResultBloc>(context).add(GameResultAdded(new GameResult(_targetWord, _lettersGuessed.join(), isWinner, _totalGuesses, DateTime.now(), UniqueKey().toString())));
 
     var titleText = isWinner ? "Congratulations!" : "You Lost";
     var contentText = isWinner

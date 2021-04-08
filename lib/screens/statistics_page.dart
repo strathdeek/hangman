@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hangman/bloc/blocs.dart';
 import 'package:hangman/models/game_result.dart';
+import 'package:intl/intl.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({Key key}) : super(key: key);
@@ -14,7 +15,8 @@ class StatisticsPage extends StatelessWidget {
       if (!(state is GameResultsLoadSuccess)) {
         return Text("loading");
       }
-      final gameResults = (state as GameResultsLoadSuccess).gameResults;
+      final gameResults = (state as GameResultsLoadSuccess).gameResults
+        ..sort((a, b) => b.time.compareTo(a.time));
       return Scaffold(
         appBar: AppBar(
             title: Container(
@@ -24,28 +26,55 @@ class StatisticsPage extends StatelessWidget {
           padding: EdgeInsets.all(50),
           child: Column(
             children: [
+              StatisticsSectionHeader("Summary"),
               StatisticsSummaryWidget(gameResults),
               SizedBox(
-                height: 40,
+                height: 20,
               ),
+              StatisticsSectionHeader("Most Guessed"),
               StatisticsBarChart(gameResults),
               SizedBox(
-                height: 40,
+                height: 20,
               ),
-              ListView.separated(
-                shrinkWrap: true,
-                itemCount: gameResults.length,
-                itemBuilder: (context, int index) {
-                  return StatisticsListItemWidget(gameResults[index]);
-                },
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
+              StatisticsSectionHeader("Game History"),
+              Expanded(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: gameResults.length,
+                  itemBuilder: (context, int index) {
+                    return StatisticsListItemWidget(gameResults[index]);
+                  },
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const Divider(),
+                ),
               ),
             ],
           ),
         ),
       );
     });
+  }
+}
+
+class StatisticsSectionHeader extends StatelessWidget {
+  String headerLabel;
+  StatisticsSectionHeader(this.headerLabel);
+  final TextStyle _headerTextStyle =
+      TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: [
+          SizedBox(width: 10),
+          Text(
+            headerLabel,
+            style: _headerTextStyle,
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -75,33 +104,37 @@ class StatisticsSummaryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Container(
-        height: 100,
-        padding: EdgeInsets.symmetric(horizontal: 15),
+        height: 130,
+        padding: EdgeInsets.all(15),
         child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("Games Played",
                   style: TextStyle(fontWeight: FontWeight.bold)),
               Text("${gameResults.length}"),
+              SizedBox(height: 15),
               Text("Win Rate", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("${_getWinRate()}%")
+              Text("${_getWinRate().toStringAsPrecision(2)}%")
             ],
           ),
-          SizedBox(width: 30),
+          SizedBox(width: 25),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "Average Word Length",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text("${_getAverageDifficulty()}"),
+              Text("${_getAverageDifficulty().toStringAsPrecision(2)}"),
+              SizedBox(height: 15),
               Text("Average Guesses",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("${_getAverageGuesses()}"),
+              Text("${_getAverageGuesses().toStringAsPrecision(2)}"),
             ],
           )
         ]),
@@ -136,6 +169,7 @@ class StatisticsBarChart extends StatelessWidget {
     for (var i = 0; i < uniqueLetters.length; i++) {
       var rods = <BarChartRodData>[]..add(BarChartRodData(
           y: letterMap[uniqueLetters[i]].toDouble(),
+          colors: [Colors.amberAccent],
         ));
       groupData.add(BarChartGroupData(
         x: i + 1,
@@ -144,19 +178,28 @@ class StatisticsBarChart extends StatelessWidget {
     }
 
     var titles = new FlTitlesData(
-        show: true,
-        bottomTitles: SideTitles(
-          showTitles: true,
-          getTextStyles: (value) => const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-          margin: 16,
-          getTitles: (double value) {
-            var title = uniqueLetters.elementAt(value.toInt() - 1);
-            print("index: $value, title: $title");
-            return title;
-          },
-        ));
-    return BarChartData(barGroups: groupData, titlesData: titles);
+      show: true,
+      bottomTitles: SideTitles(
+        showTitles: true,
+        getTextStyles: (value) => const TextStyle(
+            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14),
+        margin: 16,
+        getTitles: (double value) {
+          var title = uniqueLetters.elementAt(value.toInt() - 1);
+          return title;
+        },
+      ),
+      leftTitles: SideTitles(
+        showTitles: false,
+      ),
+    );
+    return BarChartData(
+      barGroups: groupData,
+      titlesData: titles,
+      borderData: FlBorderData(
+        show: false,
+      ),
+    );
   }
 
   StatisticsBarChart(this.gameResults);
@@ -164,8 +207,11 @@ class StatisticsBarChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         child: Container(
-      height: 200,
-      child: BarChart(_getBarChartData()),
+      padding: EdgeInsets.all(15),
+      height: 150,
+      child: BarChart(
+        _getBarChartData(),
+      ),
     ));
   }
 }
@@ -177,6 +223,51 @@ class StatisticsListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(child: Text("Word: ${gameResult.word}"));
+    return Card(
+        color: gameResult.didWin ? Colors.green.shade50 : Colors.red.shade50,
+        child: Container(
+            padding: EdgeInsets.all(15),
+            child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Word", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("${gameResult.word}"),
+                  SizedBox(height: 15),
+                  Text("Date",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                      "${DateFormat.MMMd().format(gameResult.time)}")
+                ],
+              ),
+              SizedBox(width: 45),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Guesses",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Container(
+                    height: 35,
+                    width: 150,
+                    child: Wrap(
+                      direction: Axis.horizontal,
+                      children: gameResult.guesses.characters
+                          .map((c) =>
+                              Text(c, style: TextStyle(color: gameResult.word.contains(c) ? Colors.green : Colors.red) ))
+                          .toList(),
+                    ),
+                  ),
+                  Text("Guesses Used",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                      "${gameResult.guesses.characters.where((c) => !gameResult.word.contains(c)).length}/${gameResult.numberOfGuesses}")
+                ],
+              )
+            ])));
   }
 }
