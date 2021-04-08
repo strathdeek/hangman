@@ -10,7 +10,6 @@ abstract class GameResultEvent extends Equatable {
 
 class GameResultsLoadSuccessEvent extends GameResultEvent {
   GameResultsLoadSuccessEvent() {
-    print("made me!");
   }
 }
 

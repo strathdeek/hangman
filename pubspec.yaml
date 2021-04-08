@@ -28,10 +28,14 @@ dependencies:
   fl_chart: ^0.35.0
   flutter_bloc: ^7.0.0
   get_it: ^6.0.0
+  hive: ^2.0.2
+  hive_flutter: ^1.0.0
   http: ^0.13.1
   intl: ^0.17.0
 
 dev_dependencies:
+  hive_generator: ^1.0.1
+  build_runner: ^1.12.2
   flutter_test:
     sdk: flutter
 

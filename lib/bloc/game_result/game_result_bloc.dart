@@ -24,7 +24,7 @@ class GameResultBloc extends Bloc<GameResultEvent, GameResultsState> {
   Stream<GameResultsState> _mapGameResultsLoadedToState() async* {
     try {
       final gameResults = await gameResultsDataService.get();
-      print("gameResults: $gameResults");
+      print("just fetched $gameResults from db");
       yield GameResultsLoadSuccess(gameResults);
     } catch (e) {
       yield GameResultsLoadFailure();
@@ -35,7 +35,6 @@ class GameResultBloc extends Bloc<GameResultEvent, GameResultsState> {
     if(state is GameResultsLoadSuccess){
       final List<GameResult> updatedResults = List.from((state as GameResultsLoadSuccess).gameResults)
         ..add(event.gameResult);
-        print(updatedResults);
       yield GameResultsLoadSuccess(updatedResults);
       _saveGameResults(updatedResults);
     }
