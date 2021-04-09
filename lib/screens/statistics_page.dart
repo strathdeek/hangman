@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hangman/bloc/blocs.dart';
 import 'package:hangman/models/game_result.dart';
+import 'package:hangman/widgets/bold_section_header.dart';
 import 'package:intl/intl.dart';
 
 class StatisticsPage extends StatelessWidget {
@@ -61,17 +62,17 @@ class StatisticsPage extends StatelessWidget {
           padding: EdgeInsets.all(50),
           child: Column(
             children: [
-              StatisticsSectionHeader("Summary"),
+              BoldSectionHeader("Summary"),
               StatisticsSummaryWidget(gameResults),
               SizedBox(
                 height: 20,
               ),
-              StatisticsSectionHeader("Most Guessed"),
+              BoldSectionHeader("Most Guessed"),
               StatisticsBarChart(gameResults),
               SizedBox(
                 height: 20,
               ),
-              StatisticsSectionHeader("Game History"),
+              BoldSectionHeader("Game History"),
               Expanded(
                 child: ListView.separated(
                   shrinkWrap: true,
@@ -91,27 +92,7 @@ class StatisticsPage extends StatelessWidget {
   }
 }
 
-class StatisticsSectionHeader extends StatelessWidget {
-  final String headerLabel;
-  StatisticsSectionHeader(this.headerLabel);
-  final TextStyle _headerTextStyle =
-      TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          SizedBox(width: 10),
-          Text(
-            headerLabel,
-            style: _headerTextStyle,
-          )
-        ],
-      ),
-    );
-  }
-}
 
 class StatisticsSummaryWidget extends StatelessWidget {
   final List<GameResult> gameResults;

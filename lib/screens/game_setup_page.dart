@@ -3,6 +3,7 @@ import 'package:hangman/constants/constants.dart';
 import 'package:hangman/screens/game_page.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';
 import 'package:hangman/services/service_locater.dart';
+import 'package:hangman/widgets/bold_section_header.dart';
 
 class GameSetupPage extends StatefulWidget {
   @override
@@ -15,7 +16,8 @@ class _GameSetupPageState extends State<GameSetupPage> {
   int _minLetterCount = 1;
   int _maxLetterCount = 10;
 
-  @override void initState() {
+  @override
+  void initState() {
     super.initState();
     fetchDictionaryValues();
   }
@@ -41,49 +43,61 @@ class _GameSetupPageState extends State<GameSetupPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(children: [
-              Text(
-                "Number of Guesses: ",
-                style: TextStyle(fontSize: 25),
+            BoldSectionHeader("Guesses"),
+            Card(
+                          child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal:15.0),
+                child: Row(
+                  children: [
+                    Text(
+                    _guessCount.round().toString(),
+                    style: TextStyle(fontSize: 25),
+                  ),
+                    Expanded(
+                                  child: Slider(
+                        value: _guessCount,
+                        max: 10,
+                        min: 1,
+                        divisions: 10,
+                        label: _guessCount.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            _guessCount = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Text(
-                _guessCount.round().toString(),
-                style: TextStyle(fontSize: 25),
-              )
-            ]),
-            Slider(
-              value: _guessCount,
-              max: 10,
-              min: 1,
-              divisions: 10,
-              label: _guessCount.round().toString(),
-              onChanged: (double value) {
-                setState(() {
-                  _guessCount = value;
-                });
-              },
             ),
-            Row(children: [
-              Text(
-                "Number of Letters: ",
-                style: TextStyle(fontSize: 25),
+            BoldSectionHeader("Word Length"),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: Row(
+                  children: [
+                    Text(
+                      _letterCount.round().toString(),
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    Expanded(
+                      child: Slider(
+                        value: _letterCount,
+                        max: _maxLetterCount.toDouble(),
+                        min: _minLetterCount.toDouble(),
+                        divisions: _maxLetterCount,
+                        label: _letterCount.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            _letterCount = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Text(
-                _letterCount.round().toString(),
-                style: TextStyle(fontSize: 25),
-              )
-            ]),
-            Slider(
-              value: _letterCount,
-              max: _maxLetterCount.toDouble(),
-              min: _minLetterCount.toDouble(),
-              divisions: _maxLetterCount,
-              label: _letterCount.round().toString(),
-              onChanged: (double value) {
-                setState(() {
-                  _letterCount = value;
-                });
-              },
             ),
             ElevatedButton(
                 onPressed: () {
