@@ -269,8 +269,7 @@ class StatisticsListItemWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Word", style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text("${gameResult.word}"),
-                  SizedBox(height: 15),
+                  Container(height: 55,width: 120, child: Text("${gameResult.word}")),
                   Text("Date", style: TextStyle(fontWeight: FontWeight.bold)),
                   Text("${DateFormat.MMMd().format(gameResult.time)}")
                 ],
@@ -286,8 +285,8 @@ class StatisticsListItemWidget extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Container(
-                    height: 35,
-                    width: 150,
+                    height: 55,
+                    width: 120,
                     child: Wrap(
                       direction: Axis.horizontal,
                       children: gameResult.guesses.characters

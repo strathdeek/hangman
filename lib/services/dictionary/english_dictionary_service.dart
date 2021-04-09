@@ -8,17 +8,18 @@ class EnglishDictionaryService extends DictionaryService {
     initializeDictionary();
   }
 
-  bool get isDictionaryInitialized => dictionary.length>0;
+  bool get isDictionaryInitialized => dictionary.length > 0;
   List<String> dictionary = <String>[];
   Random rng = new Random();
 
   @override
   Future<String> getRandomWord(int numberOfLetters) async {
-    if(!isDictionaryInitialized){
+    if (!isDictionaryInitialized) {
       await initializeDictionary();
     }
-    
-    var filteredDictionary = dictionary.where((element) => element.length==numberOfLetters);
+
+    var filteredDictionary =
+        dictionary.where((element) => element.length == numberOfLetters);
     var randomIndex = rng.nextInt(filteredDictionary.length);
     return filteredDictionary.elementAt(randomIndex);
   }
@@ -29,32 +30,37 @@ class EnglishDictionaryService extends DictionaryService {
       return;
     }
     var response = await http.get(Uri.https("raw.githubusercontent.com",
-        "mrdziuban/Hangman/master/dictionary.txt"));
-    dictionary = response.body.split("\n").where((String word) => word.isNotEmpty).toList();
+        "first20hours/google-10000-english/master/google-10000-english.txt"));
+    dictionary = response.body
+        .split("\n")
+        .where((String word) =>
+            word.isNotEmpty && RegExp(r"[A-Za-z]").hasMatch(word))
+        .map((word) => word.toUpperCase())
+        .toList();
   }
 
   @override
   Future<int> getLongestWordLength() async {
-    if(!isDictionaryInitialized){
+    if (!isDictionaryInitialized) {
       await initializeDictionary();
     }
-    dictionary.sort((a,b)=>a.length.compareTo(b.length)); 
+    dictionary.sort((a, b) => a.length.compareTo(b.length));
     return dictionary.last.length;
   }
 
   @override
   Future<int> getShortestWordLength() async {
-    if(!isDictionaryInitialized){
+    if (!isDictionaryInitialized) {
       await initializeDictionary();
     }
-    dictionary.sort((a,b)=>a.length.compareTo(b.length)); 
+    dictionary.sort((a, b) => a.length.compareTo(b.length));
     print(dictionary.first);
     return dictionary.first.length;
   }
 
   @override
   Future<List<String>> getAllWords(int numberOfLetters) async {
-    if(!isDictionaryInitialized){
+    if (!isDictionaryInitialized) {
       await initializeDictionary();
     }
     return dictionary.where((word) => word.length == numberOfLetters).toList();

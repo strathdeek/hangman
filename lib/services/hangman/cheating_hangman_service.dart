@@ -13,24 +13,11 @@ class CheatingHangmanService extends HangmanService {
   @override
   Future<String> getNewWord(String guess, String alreadyGuessedLetters,
       String currentWord, GameMode mode) async {
-    switch (mode) {
-      case GameMode.easy:
-        return currentWord;
-      case GameMode.normal:
-        return currentWord;
-      case GameMode.hard:
-        return getHardestPossibleWord(guess, alreadyGuessedLetters, currentWord);
-      default:
-        return currentWord;
+    if (mode == GameMode.normal) {
+      return currentWord;
     }
-  }
-
-  // return a compatible word that is least likely to lead to a match given the current guesses
-  Future<String> getHardestPossibleWord(
-      String guess, String alreadyGuessedLetters, String currentWord) async {
     Map<int, String> correctGuesses =
-        getCorrectGuessesMap(alreadyGuessedLetters, currentWord);
-
+        getLetterIndexMap(alreadyGuessedLetters, currentWord);
     List<String> incorrectGuesses = alreadyGuessedLetters.split("");
     String correctRePattern = r"";
     for (var i = 0; i < currentWord.length; i++) {
@@ -42,12 +29,10 @@ class CheatingHangmanService extends HangmanService {
       }
     }
 
-    String newGuessRePattern = "[$guess]";
     String incorrectRePattern = "[${incorrectGuesses.join("")}]";
 
     RegExp correctGuessesRegex = RegExp(correctRePattern);
     RegExp incorrectGuessesRegex = RegExp(incorrectRePattern);
-    RegExp newGuessRegex = RegExp(newGuessRePattern);
 
     var wordsOfCorrectLength =
         await dictionaryService.getAllWords(currentWord.length);
@@ -55,39 +40,78 @@ class CheatingHangmanService extends HangmanService {
     var possibleTargetWords = wordsOfCorrectLength.where((word) {
       return !incorrectGuessesRegex.hasMatch(word.toUpperCase()) &&
           correctGuessesRegex.hasMatch(word.toUpperCase());
-    });
-
-    var bestTargetWords =
-        possibleTargetWords.where((word) => !newGuessRegex.hasMatch(word.toUpperCase()));
-
-    if (bestTargetWords.isNotEmpty) {
-      return bestTargetWords.elementAt(rng.nextInt(bestTargetWords.length));
+    }).toList();
+    if (mode == GameMode.hard) {
+      return getHardestPossibleWord(possibleTargetWords, guess, currentWord);
     } else {
-      return possibleTargetWords
-          .elementAt(rng.nextInt(possibleTargetWords.length));
+      return getEasiestPossibleWord(possibleTargetWords, guess, currentWord);
     }
   }
 
-  Future<String> getEasiestPossibleWord(
-      String guesses, String currentWord) async {}
-}
+  Future<String> getHardestPossibleWord(List<String> possibleTargetWords,
+      String guess, String currentWord) async {
+    var bestTargetWords = possibleTargetWords
+        .where((word) => !word.toUpperCase().contains(guess));
 
-Map<int, String> getCorrectGuessesMap(String guesses, String currentWord) {
-  Map<int, String> correctGuesses = Map<int, String>();
-  var lettersGuessed = guesses.split('');
-
-  lettersGuessed.forEach((letter) {
-    if (currentWord.contains(letter)) {
-      var correctGuessIndices = <int>[];
-      int correctGuessIndex = currentWord.indexOf(letter);
-      while (correctGuessIndex != -1) {
-        correctGuessIndices.add(correctGuessIndex);
-        correctGuessIndex = currentWord.indexOf(letter, correctGuessIndex + 1);
-      }
-      correctGuessIndices.forEach((index) {
-        correctGuesses[index] = letter;
-      });
+    if (bestTargetWords.isNotEmpty) {
+      return bestTargetWords.elementAt(rng.nextInt(bestTargetWords.length));
+    } else if (possibleTargetWords.isNotEmpty) {
+      return possibleTargetWords
+          .elementAt(rng.nextInt(possibleTargetWords.length));
+    } else {
+      return currentWord;
     }
-  });
-  return correctGuesses;
+  }
+
+  Future<String> getEasiestPossibleWord(List<String> possibleTargetWords,
+      String guess, String currentWord) async {
+    //each entry in this map represents an index in the target word, and list of possible words
+    // that contain the 'guess' at that index
+    var possibleTargetWordsMap = new Map<int, List<String>>();
+
+    // sort all possible words into bins based on where the guess is located in the word
+    possibleTargetWords.forEach((word) {
+      var indexMap = getLetterIndexMap(guess, word);
+      indexMap.forEach((index, letter) {
+        if (!possibleTargetWordsMap.containsKey(index)) {
+          possibleTargetWordsMap[index] = <String>[];
+        }
+        possibleTargetWordsMap[index].add(word);
+      });
+    });
+
+    //sort the word bins to find the one with the most possible words
+    var sortedLists = possibleTargetWordsMap.values.toList()
+      ..sort((a, b) => a.length.compareTo(b.length));
+
+    if (sortedLists.isEmpty) {
+      return currentWord;
+    }
+    var longestList = sortedLists.last;
+    return longestList.elementAt(rng.nextInt(longestList.length));
+  }
+
+// Return a map indicating the location of each letter of 'letters' within target 'word'
+  Map<int, String> getLetterIndexMap(String letters, String word) {
+    Map<int, String> letterIndices = Map<int, String>();
+
+    letters.split('').forEach((letter) {
+      if (word.contains(letter)) {
+        //keep track of every index where the letter is found in the buffer
+        var indexBuffer = <int>[];
+        int letterIndex = word.indexOf(letter);
+        while (letterIndex != -1) {
+          indexBuffer.add(letterIndex);
+          letterIndex = word.indexOf(letter, letterIndex + 1);
+        }
+        //after accounting for every match, save the results into the map and proceed to next letter
+        indexBuffer.forEach((index) {
+          letterIndices[index] = letter;
+        });
+      }
+    });
+    return letterIndices;
+  }
 }
+
+// return a compatible word that is least likely to lead to a match given the current guesses

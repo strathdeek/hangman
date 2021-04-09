@@ -7,6 +7,7 @@ import 'package:hangman/models/game_result.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';
 import 'package:hangman/services/hangman/hangman_service.dart';
 import 'package:hangman/services/service_locater.dart';
+import 'package:intl/intl.dart';
 
 class GamePage extends StatefulWidget {
   final int guesses;
@@ -82,7 +83,8 @@ class _GamePageState extends State<GamePage> {
       guessFocusNode.requestFocus();
       return;
     }
-    var newTargetWord = await getIt<HangmanService>().getNewWord(_currentGuess, _lettersGuessed.join(""), _targetWord, _gameMode);
+    var newTargetWord = await getIt<HangmanService>().getNewWord(
+        _currentGuess, _lettersGuessed.join(""), _targetWord, _gameMode);
     setState(() {
       _targetWord = newTargetWord.toUpperCase();
       _errorText = "";
@@ -134,6 +136,14 @@ class _GamePageState extends State<GamePage> {
         });
   }
 
+  List<Widget> _getTextList(String word) {
+    var list = <Text>[];
+    word.characters.join(' ').characters.forEach((char) {
+      list.add(Text(char, style: TextStyle(fontSize: 25),));
+    });
+    return list;
+  }
+
   void _resetGame() {
     Navigator.of(context).pop();
     _loadTargetWord(_targetWord.length);
@@ -166,14 +176,12 @@ class _GamePageState extends State<GamePage> {
               Card(
                 child: Padding(
                   padding: EdgeInsets.all(15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                  child: 
                       Column(
                         children: [
-                          Text(
-                            _displayWord.characters.join(" "),
-                            style: TextStyle(fontSize: 30),
+                          Wrap(
+                            children: _getTextList(_displayWord),
+                            
                           ),
                           SizedBox(
                             height: 20,
@@ -182,8 +190,6 @@ class _GamePageState extends State<GamePage> {
                               "Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
                         ],
                       ),
-                    ],
-                  ),
                 ),
               ),
               Spacer(),
