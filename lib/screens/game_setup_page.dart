@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hangman/constants/constants.dart';
+import 'package:hangman/constants/game_modes.dart';
 import 'package:hangman/screens/game_page.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';
 import 'package:hangman/services/service_locater.dart';
@@ -15,6 +16,7 @@ class _GameSetupPageState extends State<GameSetupPage> {
   double _letterCount = 5;
   int _minLetterCount = 1;
   int _maxLetterCount = 10;
+  GameMode _gameMode = GameMode.normal;
 
   @override
   void initState() {
@@ -45,16 +47,16 @@ class _GameSetupPageState extends State<GameSetupPage> {
           children: [
             BoldSectionHeader("Guesses"),
             Card(
-                          child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal:15.0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Row(
                   children: [
                     Text(
-                    _guessCount.round().toString(),
-                    style: TextStyle(fontSize: 25),
-                  ),
+                      _guessCount.round().toString(),
+                      style: TextStyle(fontSize: 25),
+                    ),
                     Expanded(
-                                  child: Slider(
+                      child: Slider(
                         value: _guessCount,
                         max: 10,
                         min: 1,
@@ -99,13 +101,58 @@ class _GameSetupPageState extends State<GameSetupPage> {
                 ),
               ),
             ),
+            Card(
+              child: Padding(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Radio(
+                        value: GameMode.easy,
+                        groupValue: _gameMode,
+                        onChanged: (value) {
+                          setState(() {
+                            _gameMode = value;
+                          });
+                        },
+                      ),
+                      title: Text("Easy"),
+                    ),
+                    ListTile(
+                      leading: Radio(
+                        value: GameMode.normal,
+                        groupValue: _gameMode,
+                        onChanged: (value) {
+                          setState(() {
+                            _gameMode = value;
+                          });
+                        },
+                      ),
+                      title: Text("Normal"),
+                    ),
+                    ListTile(
+                      leading: Radio(
+                        value: GameMode.hard,
+                        groupValue: _gameMode,
+                        onChanged: (value) {
+                          setState(() {
+                            _gameMode = value;
+                          });
+                        },
+                      ),
+                      title: Text("Hard"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => GamePage(
-                              _guessCount.round(), _letterCount.round())));
+                              _guessCount.round(), _letterCount.round(), _gameMode)));
                 },
                 child: Text("Play"))
           ],

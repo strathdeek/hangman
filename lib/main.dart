@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hangman/bloc/simple_bloc_observer.dart';
 import 'package:hangman/constants/constants.dart';
+import 'package:hangman/constants/game_modes.dart';
 import 'package:hangman/screens/game_page.dart';
 import 'package:hangman/screens/game_setup_page.dart';
 import 'package:hangman/screens/statistics_page.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
       routes: {
         Constants.GameSetupPageRouteName: (context) => GameSetupPage(),
         Constants.StatisticsPageRouteName: (context) => StatisticsPage(),
-        Constants.GamePageRouteName: (context) => GamePage(5, 5),
+        Constants.GamePageRouteName: (context) => GamePage(5, 5, GameMode.normal),
       },
       home: MainPage(),
     );

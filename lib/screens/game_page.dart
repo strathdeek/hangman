@@ -2,26 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hangman/bloc/blocs.dart';
 import 'package:hangman/bloc/game_result/game_result_bloc.dart';
+import 'package:hangman/constants/game_modes.dart';
 import 'package:hangman/models/game_result.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';
+import 'package:hangman/services/hangman/hangman_service.dart';
 import 'package:hangman/services/service_locater.dart';
 
 class GamePage extends StatefulWidget {
   final int guesses;
   final int length;
-  GamePage(this.guesses, this.length) : super();
+  final GameMode gameMode;
+  GamePage(this.guesses, this.length, this.gameMode) : super();
   @override
-  _GamePageState createState() => _GamePageState(guesses, length);
+  _GamePageState createState() => _GamePageState(guesses, length, gameMode);
 }
 
 class _GamePageState extends State<GamePage> {
-  _GamePageState(this._totalGuesses, int wordLength) : super() {
+  _GamePageState(this._totalGuesses, int wordLength, this._gameMode) : super() {
     _loadTargetWord(wordLength);
   }
 
   final guessController = TextEditingController();
   final guessFocusNode = FocusNode();
 
+  GameMode _gameMode;
   int _totalGuesses;
   int _currentGuesses = 0;
   String _errorText = "";
@@ -55,7 +59,7 @@ class _GamePageState extends State<GamePage> {
     });
   }
 
-  void _submitGuess() {
+  void _submitGuess() async {
     guessController.clear();
 
     if (_currentGuess.isEmpty) {
@@ -78,8 +82,9 @@ class _GamePageState extends State<GamePage> {
       guessFocusNode.requestFocus();
       return;
     }
-
+    var newTargetWord = await getIt<HangmanService>().getNewWord(_currentGuess, _lettersGuessed.join(""), _targetWord, _gameMode);
     setState(() {
+      _targetWord = newTargetWord.toUpperCase();
       _errorText = "";
       _lettersGuessed.add(_currentGuess);
       if (!_targetWord.contains(_currentGuess)) {

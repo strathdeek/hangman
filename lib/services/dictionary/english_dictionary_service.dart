@@ -51,4 +51,12 @@ class EnglishDictionaryService extends DictionaryService {
     print(dictionary.first);
     return dictionary.first.length;
   }
+
+  @override
+  Future<List<String>> getAllWords(int numberOfLetters) async {
+    if(!isDictionaryInitialized){
+      await initializeDictionary();
+    }
+    return dictionary.where((word) => word.length == numberOfLetters).toList();
+  }
 }
