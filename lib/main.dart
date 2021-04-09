@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hangman',
       theme: ThemeData(
-          primarySwatch: Colors.amber,
+          primarySwatch: Colors.amber ,
           textButtonTheme: TextButtonThemeData(
               style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.resolveWith(

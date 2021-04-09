@@ -20,22 +20,36 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("HANGMAN"),
-      ),
+      
       body: Container(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                  onPressed: _navigateToStartGame, child: Text("New Game")),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                  onPressed: _navigateToStatistics, child: Text("Statistics")),
-            ],
+        color: Colors.white,
+          alignment: Alignment.topCenter,
+          child: Expanded(
+            child: Column(
+              children: [
+                Container(
+                    alignment: Alignment.topCenter,
+                    child: Image(
+                        image: AssetImage("assets/images/gallows.png")),
+                        height: 200,),
+                Spacer(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                        onPressed: _navigateToStartGame,
+                        child: Text("New Game")),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                        onPressed: _navigateToStatistics,
+                        child: Text("Statistics")),
+                  ],
+                ),
+                Spacer()
+              ],
+            ),
           )),
     );
   }
