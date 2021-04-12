@@ -7,6 +7,7 @@ import 'package:hangman/models/game_result.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';
 import 'package:hangman/services/hangman/hangman_service.dart';
 import 'package:hangman/services/service_locater.dart';
+import 'package:hangman/widgets/hangman_drawing.dart';
 import 'package:intl/intl.dart';
 
 class GamePage extends StatefulWidget {
@@ -139,7 +140,10 @@ class _GamePageState extends State<GamePage> {
   List<Widget> _getTextList(String word) {
     var list = <Text>[];
     word.characters.join(' ').characters.forEach((char) {
-      list.add(Text(char, style: TextStyle(fontSize: 25),));
+      list.add(Text(
+        char,
+        style: TextStyle(fontSize: 25),
+      ));
     });
     return list;
   }
@@ -172,24 +176,25 @@ class _GamePageState extends State<GamePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Spacer(),
+              HangmanDrawing(
+                progress: _currentGuesses / _totalGuesses,
+              ),
               Spacer(),
               Card(
                 child: Padding(
                   padding: EdgeInsets.all(15),
-                  child: 
-                      Column(
-                        children: [
-                          Wrap(
-                            children: _getTextList(_displayWord),
-                            
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                              "Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
-                        ],
+                  child: Column(
+                    children: [
+                      Wrap(
+                        children: _getTextList(_displayWord),
                       ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                          "Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
+                    ],
+                  ),
                 ),
               ),
               Spacer(),
