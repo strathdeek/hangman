@@ -1,7 +1,7 @@
 import 'package:hangman/models/game_result.dart';
 import 'package:hangman/services/database/game_result_data_service.dart';
 
-class MockGameResultDataService extends GameResultDataService{
+class MockGameResultDataService extends GameResultDataService {
   final List<GameResult> gameResults = <GameResult>[];
   @override
   Future<void> add(GameResult gameResult) async {
@@ -20,22 +20,17 @@ class MockGameResultDataService extends GameResultDataService{
   }
 
   @override
-  Future<void> delete(GameResult gameResult) {
-      // TODO: implement delete
-      throw UnimplementedError();
-    }
-  
-    @override
-    Future<void> deleteAll() {
-      // TODO: implement deleteAll
-      throw UnimplementedError();
-    }
-  
-    @override
-    Future<void> update(GameResult gameResult) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<void> delete(GameResult gameResult) async {
+    gameResults.remove(gameResult);
   }
 
+  @override
+  Future<void> deleteAll() async {
+    gameResults.clear();
+  }
 
+  @override
+  Future<void> update(GameResult gameResult) async {
+    gameResults.map((e) => e.id == gameResult.id ? gameResult : e);
+  }
 }
