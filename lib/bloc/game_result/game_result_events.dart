@@ -21,7 +21,7 @@ class GameResultAdded extends GameResultEvent {
   List<Object> get props => [gameResult];
 
   @override
-  String toString() => 'TodoAdded { gameResult: $gameResult }';
+  String toString() => 'gameResults added { gameResult: $gameResult }';
 }
 
 class GameResultUpdated extends GameResultEvent {
@@ -48,5 +48,4 @@ class GameResultDeleted extends GameResultEvent {
   String toString() => 'TodoDeleted { gameResult: $gameResult }';
 }
 
-class GameResultDeleteAll extends GameResultEvent{}
-
+class GameResultDeleteAll extends GameResultEvent {}

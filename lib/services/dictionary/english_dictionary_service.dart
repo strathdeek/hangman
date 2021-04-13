@@ -65,4 +65,13 @@ class EnglishDictionaryService extends DictionaryService {
     }
     return dictionary.where((word) => word.length == numberOfLetters).toList();
   }
+
+  @override
+  Future<List<int>> getPossibleWordLengths() async {
+    if (!isDictionaryInitialized) {
+      await initializeDictionary();
+    }
+
+    return dictionary.map((e) => e.length).toSet().toList();
+  }
 }

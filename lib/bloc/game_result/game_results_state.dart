@@ -1,26 +1,59 @@
 import 'package:equatable/equatable.dart';
 import 'package:hangman/models/game_result.dart';
 
-abstract class GameResultsState extends Equatable{
+abstract class GameResultsState extends Equatable {
   const GameResultsState();
 
   @override
   List<Object> get props => [];
 }
 
-class GameResultsLoadInProgress extends GameResultsState {}
+class GameResultsLoading extends GameResultsState {}
 
-class GameResultsLoadFailure extends GameResultsState {}
+class GameResultsLoadFailed extends GameResultsState {
+  final String error;
 
-class GameResultsLoadSuccess extends GameResultsState {
+  const GameResultsLoadFailed([this.error]);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class GameResultsAddFailed extends GameResultsState {
+  final String error;
+
+  const GameResultsAddFailed([this.error]);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class GameResultsUpdateFailed extends GameResultsState {
+  final String error;
+
+  const GameResultsUpdateFailed([this.error]);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class GameResultsDeleteFailed extends GameResultsState {
+  final String error;
+
+  const GameResultsDeleteFailed([this.error]);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class GameResultsLoaded extends GameResultsState {
   final List<GameResult> gameResults;
 
-  const GameResultsLoadSuccess([this.gameResults = const []]);
+  const GameResultsLoaded([this.gameResults = const []]);
 
   @override
   List<Object> get props => [gameResults];
 
   @override
-  String toString() => 'GameResultsLoadSuccess { gameResults: $gameResults }';
+  String toString() => 'GameResultsLoaded { gameResults: $gameResults }';
 }
-

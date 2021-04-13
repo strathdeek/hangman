@@ -13,9 +13,11 @@ class GameSetupPage extends StatefulWidget {
 
 class _GameSetupPageState extends State<GameSetupPage> {
   double _guessCount = 5;
-  double _letterCount = 5;
+  int _letterCount = 5;
   int _minLetterCount = 1;
   int _maxLetterCount = 10;
+  List<int> _allowedLengths;
+  String _errorMessage = "";
   GameMode _gameMode = GameMode.normal;
 
   @override
@@ -27,9 +29,19 @@ class _GameSetupPageState extends State<GameSetupPage> {
   Future<void> fetchDictionaryValues() async {
     var min = await getIt<DictionaryService>().getShortestWordLength();
     var max = await getIt<DictionaryService>().getLongestWordLength();
+    _allowedLengths = await getIt<DictionaryService>().getPossibleWordLengths();
     setState(() {
       _minLetterCount = min;
       _maxLetterCount = max;
+    });
+  }
+
+  void _setLetterCount(int letterCount) {
+    setState(() {
+      _letterCount = letterCount;
+      _errorMessage = _allowedLengths.contains(letterCount)
+          ? ""
+          : "No available $letterCount letter words.";
     });
   }
 
@@ -45,6 +57,7 @@ class _GameSetupPageState extends State<GameSetupPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Spacer(),
             BoldSectionHeader("Guesses"),
             Card(
               child: Padding(
@@ -73,6 +86,7 @@ class _GameSetupPageState extends State<GameSetupPage> {
                 ),
               ),
             ),
+            Spacer(),
             BoldSectionHeader("Word Length"),
             Card(
               child: Padding(
@@ -85,22 +99,22 @@ class _GameSetupPageState extends State<GameSetupPage> {
                     ),
                     Expanded(
                       child: Slider(
-                        value: _letterCount,
+                        value: _letterCount.toDouble(),
                         max: _maxLetterCount.toDouble(),
                         min: _minLetterCount.toDouble(),
                         divisions: _maxLetterCount,
                         label: _letterCount.round().toString(),
-                        onChanged: (double value) {
-                          setState(() {
-                            _letterCount = value;
-                          });
-                        },
+                        onChanged: (value) => _setLetterCount(value.round()),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
+            Text(_errorMessage,
+                style:
+                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            Spacer(),
             Card(
               child: Padding(
                 padding: EdgeInsets.all(15),
@@ -147,14 +161,20 @@ class _GameSetupPageState extends State<GameSetupPage> {
               ),
             ),
             ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => GamePage(
-                              _guessCount.round(), _letterCount.round(), _gameMode)));
-                },
-                child: Text("Play"))
+              onPressed: () {
+                if (!_allowedLengths.contains(_letterCount)) {
+                  return;
+                }
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GamePage(_guessCount.round(),
+                            _letterCount.round(), _gameMode)));
+              },
+              child:
+                  Container(alignment: Alignment.center, child: Text("Play")),
+            ),
+            Spacer(),
           ],
         ),
       ),

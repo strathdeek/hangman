@@ -64,10 +64,10 @@ class _StatisticsPageState extends State<StatisticsPage>
   Widget build(BuildContext context) {
     return BlocBuilder<GameResultBloc, GameResultsState>(
         builder: (context, state) {
-      if (!(state is GameResultsLoadSuccess)) {
+      if (!(state is GameResultsLoaded)) {
         return Text("loading");
       }
-      final gameResults = (state as GameResultsLoadSuccess).gameResults
+      final gameResults = (state as GameResultsLoaded).gameResults
         ..sort((a, b) => b.time.compareTo(a.time));
 
       return Scaffold(
