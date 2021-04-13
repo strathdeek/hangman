@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,8 +8,31 @@ import 'package:hangman/models/game_result.dart';
 import 'package:hangman/widgets/bold_section_header.dart';
 import 'package:intl/intl.dart';
 
-class StatisticsPage extends StatelessWidget {
+class StatisticsPage extends StatefulWidget {
   const StatisticsPage({Key key}) : super(key: key);
+
+  @override
+  _StatisticsPageState createState() => _StatisticsPageState();
+}
+
+class _StatisticsPageState extends State<StatisticsPage>
+    with SingleTickerProviderStateMixin {
+  double _upperSectionHeight = 150;
+  bool _displayUpperSection = true;
+  Duration _animationDuration = Duration(milliseconds: 400);
+  ScrollController _listViewController = ScrollController();
+  _StatisticsPageState() {
+    _listViewController.addListener(() => _toggleUpperSectionVisibility());
+  }
+  void _toggleUpperSectionVisibility() {
+    setState(() {
+      _upperSectionHeight = (_listViewController.offset > 100) ? 0 : 150;
+
+      if (_upperSectionHeight == 0) {
+        _displayUpperSection = false;
+      }
+    });
+  }
 
   void _confirmDeleteStatistics(BuildContext context) {
     showDialog(
@@ -62,15 +87,27 @@ class StatisticsPage extends StatelessWidget {
           padding: EdgeInsets.all(50),
           child: Column(
             children: [
-              BoldSectionHeader("Summary"),
-              StatisticsSummaryWidget(gameResults),
-              SizedBox(
-                height: 20,
+              BoldSectionHeader(
+                  _upperSectionHeight > 0 ? "Summary" : "Summary..."),
+              AnimatedContainer(
+                duration: _animationDuration,
+                curve: Curves.ease,
+                height: _upperSectionHeight,
+                child:
+                    StatisticsSummaryWidget(gameResults, _displayUpperSection),
               ),
-              BoldSectionHeader("Most Guessed"),
-              StatisticsBarChart(gameResults),
-              SizedBox(
-                height: 20,
+              BoldSectionHeader(
+                  _upperSectionHeight > 0 ? "Most Guessed" : "Most Guessed..."),
+              AnimatedContainer(
+                duration: _animationDuration,
+                curve: Curves.ease,
+                height: _upperSectionHeight,
+                child: StatisticsBarChart(gameResults, _displayUpperSection),
+                onEnd: () {
+                  setState(() {
+                    _displayUpperSection = _upperSectionHeight != 0;
+                  });
+                },
               ),
               BoldSectionHeader("Game History"),
               Expanded(
@@ -82,6 +119,7 @@ class StatisticsPage extends StatelessWidget {
                   },
                   separatorBuilder: (BuildContext context, int index) =>
                       const Divider(),
+                  controller: _listViewController,
                 ),
               ),
             ],
@@ -92,12 +130,11 @@ class StatisticsPage extends StatelessWidget {
   }
 }
 
-
-
 class StatisticsSummaryWidget extends StatelessWidget {
   final List<GameResult> gameResults;
+  final bool showSummary;
 
-  StatisticsSummaryWidget(this.gameResults);
+  StatisticsSummaryWidget(this.gameResults, this.showSummary);
 
   String _getWinRate() {
     if (gameResults.isEmpty) {
@@ -130,41 +167,43 @@ class StatisticsSummaryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Container(
-        height: 130,
         padding: EdgeInsets.all(15),
         alignment: Alignment.center,
-        child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Games Played",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("${gameResults.length}"),
-              SizedBox(height: 15),
-              Text("Win Rate", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(_getWinRate())
-            ],
-          ),
-          SizedBox(width: 25),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Average Word Length",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(_getAverageDifficulty()),
-              SizedBox(height: 15),
-              Text("Average Guesses",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(_getAverageGuesses()),
-            ],
-          )
-        ]),
+        child: showSummary
+            ? Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Games Played",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("${gameResults.length}"),
+                    SizedBox(height: 10),
+                    Text("Win Rate",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(_getWinRate())
+                  ],
+                ),
+                SizedBox(width: 25),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Average Word Length",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(_getAverageDifficulty()),
+                    SizedBox(height: 10),
+                    Text("Average Guesses",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(_getAverageGuesses()),
+                  ],
+                )
+              ])
+            : CircularProgressIndicator(),
       ),
     );
   }
@@ -172,7 +211,7 @@ class StatisticsSummaryWidget extends StatelessWidget {
 
 class StatisticsBarChart extends StatelessWidget {
   final List<GameResult> gameResults;
-
+  final bool displayBarChart;
   BarChartData _getBarChartData() {
     var letterMap = Map<String, int>();
     var letters = <String>[];
@@ -229,24 +268,21 @@ class StatisticsBarChart extends StatelessWidget {
     );
   }
 
-  StatisticsBarChart(this.gameResults);
+  StatisticsBarChart(this.gameResults, this.displayBarChart);
   @override
   Widget build(BuildContext context) {
     return Card(
         child: Container(
       padding: EdgeInsets.all(15),
-      height: 150,
-      child: gameResults.isNotEmpty
+      child: gameResults.isNotEmpty && displayBarChart
           ? BarChart(
               _getBarChartData(),
             )
-          : Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("No Data"),
-                ],
-              ),
+          : Container(
+              alignment: Alignment.center,
+              child: displayBarChart
+                  ? Text("No Data")
+                  : CircularProgressIndicator(),
             ),
     ));
   }
@@ -269,12 +305,15 @@ class StatisticsListItemWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Word", style: TextStyle(fontWeight: FontWeight.bold)),
-                  Container(height: 55,width: 120, child: Text("${gameResult.word}")),
+                  Container(
+                      height: 55,
+                      width: 120,
+                      child: Text("${gameResult.word}")),
                   Text("Date", style: TextStyle(fontWeight: FontWeight.bold)),
                   Text("${DateFormat.MMMd().format(gameResult.time)}")
                 ],
               ),
-              SizedBox(width: 45),
+              SizedBox(width: 30),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,

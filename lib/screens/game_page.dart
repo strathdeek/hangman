@@ -170,94 +170,103 @@ class _GamePageState extends State<GamePage> {
           onPressed: _navigateHome,
         ),
       ),
-      body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 50),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Spacer(),
-              HangmanDrawing(
-                progress: _currentGuesses / _totalGuesses,
-              ),
-              Spacer(),
-              Card(
-                child: Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Column(
-                    children: [
-                      Wrap(
-                        children: _getTextList(_displayWord),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                          "Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
-                    ],
+      body: SafeArea(
+        child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 50),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Spacer(),
+                HangmanDrawing(
+                  progress: _currentGuesses / _totalGuesses,
+                ),
+                Spacer(),
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
+                      children: [
+                        Wrap(
+                          children: _getTextList(_displayWord),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                            "Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Spacer(),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            height: 40,
-                            width: 40,
-                            alignment: Alignment.center,
-                            child: TextField(
-                              buildCounter: (BuildContext context,
-                                      {int currentLength,
-                                      int maxLength,
-                                      bool isFocused}) =>
-                                  null,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(bottom: 20),
-                                border: OutlineInputBorder(),
-                              ),
-                              showCursor: false,
-                              onChanged: _trimTextInput,
-                              style: TextStyle(fontSize: 22),
-                              controller: guessController,
-                              onSubmitted: (String input) => _submitGuess(),
-                              focusNode: guessFocusNode,
+                Spacer(),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          height: 150,
+                          width: 75,
+                          alignment: Alignment.center,
+                          child: TextField(
+                            buildCounter: (BuildContext context,
+                                    {int currentLength,
+                                    int maxLength,
+                                    bool isFocused}) =>
+                                null,
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(bottom: 40),
+                              border: OutlineInputBorder(),
                             ),
+                            showCursor: false,
+                            onChanged: _trimTextInput,
+                            style: TextStyle(fontSize: 50),
+                            controller: guessController,
+                            onSubmitted: (String input) => _submitGuess(),
+                            focusNode: guessFocusNode,
                           ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          ElevatedButton(
-                            onPressed: _submitGuess,
-                            child: Text("Guess"),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        _errorText,
-                        style: TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "Guessed: ${_lettersGuessed.join(", ")}",
-                        style: TextStyle(fontSize: 25),
-                      ),
-                    ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: _submitGuess,
+                              child: Text("Guess"),
+                            ),
+                            Text(
+                              _errorText,
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "Guesses:",
+                              style: TextStyle(fontSize: 25),
+                            ),
+                            Wrap(
+                              direction: Axis.horizontal,
+                              children: _lettersGuessed
+                                  .map((c) => Text(c,
+                                      style: TextStyle(
+                                          fontSize: 25,
+                                          color: _targetWord.contains(c)
+                                              ? Colors.green
+                                              : Colors.red)))
+                                  .toList(),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Spacer()
-            ],
-          )),
+                Spacer(),
+              ],
+            )),
+      ),
     );
   }
 }

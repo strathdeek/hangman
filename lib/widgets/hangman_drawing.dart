@@ -10,8 +10,8 @@ class HangmanDrawing extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: CustomPaint(
-        size: Size(300, 300),
-        painter: HangmanPainter(300, progress),
+        size: Size(200, 200),
+        painter: HangmanPainter(200, progress),
       ),
     );
   }
@@ -50,23 +50,23 @@ class HangmanPainter extends CustomPainter {
     eyeSize = headSize / 3;
     mouthSize = headSize / 3;
 
-    head = Offset(center, 0);
-    neck = Offset(center, headSize);
-    shoulder = Offset(center, unit * 1.5);
-    hip = Offset(center, unit * 3.5);
-    leftHand = Offset(1.4 * unit, 2.5 * unit);
-    rightHand = Offset(4.6 * unit, 2.5 * unit);
+    head = Offset(center, headSize);
+    neck = Offset(center, 2 * headSize);
+    shoulder = Offset(center, unit * 2.5);
+    hip = Offset(center, unit * 4.5);
+    leftHand = Offset(1.4 * unit, 3.5 * unit);
+    rightHand = Offset(4.6 * unit, 3.5 * unit);
     leftFoot = Offset(1.7 * unit, width);
     rightFoot = Offset(4.3 * unit, width);
     leftEye = Offset(
       (center - (headSize * .4)) - (eyeSize / 2),
-      -.5 * headSize,
+      .5 * headSize,
     );
     rightEye = Offset(
       (center + (headSize * .4)) - (eyeSize / 2),
-      -.5 * headSize,
+      .5 * headSize,
     );
-    mouth = Offset(center - (headSize / 2), .5 * headSize);
+    mouth = Offset(center - (headSize / 2), 1.5 * headSize);
     needsPainting = true;
 
     drawingSteps = <Function(Canvas canvas)>[
