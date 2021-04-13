@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/services.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,9 +30,11 @@ class EnglishDictionaryService extends DictionaryService {
     if (isDictionaryInitialized) {
       return;
     }
-    var response = await http.get(Uri.https("raw.githubusercontent.com",
-        "first20hours/google-10000-english/master/google-10000-english.txt"));
-    dictionary = response.body
+
+    var dictionaryFile = await rootBundle
+        .loadString('assets/dictionary/google-10000-english.txt');
+
+    dictionary = dictionaryFile
         .split("\n")
         .where((String word) =>
             word.isNotEmpty && RegExp(r"[A-Za-z]").hasMatch(word))
