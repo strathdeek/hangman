@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hangman/constants/constants.dart';
 import 'package:hangman/constants/game_modes.dart';
 import 'package:hangman/screens/game_page.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';

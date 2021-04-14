@@ -8,7 +8,6 @@ import 'package:hangman/services/dictionary/dictionary_service.dart';
 import 'package:hangman/services/hangman/hangman_service.dart';
 import 'package:hangman/services/service_locater.dart';
 import 'package:hangman/widgets/hangman_drawing.dart';
-import 'package:intl/intl.dart';
 
 class GamePage extends StatefulWidget {
   final int guesses;

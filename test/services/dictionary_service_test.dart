@@ -6,10 +6,10 @@ import 'package:hangman/services/service_locater.dart';
 DictionaryService get dictionaryService => getIt<DictionaryService>();
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() async {
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
     getIt.registerSingleton<DictionaryService>(EnglishDictionaryService());
-    await dictionaryService.initializeDictionary();
   });
   group('dictionary service tests', () {
     test('get word of length 5', () async {

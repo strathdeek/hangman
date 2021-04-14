@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/services.dart';
 import 'package:hangman/services/dictionary/dictionary_service.dart';
-import 'package:http/http.dart' as http;
 
 class EnglishDictionaryService extends DictionaryService {
   EnglishDictionaryService() {
@@ -57,7 +56,6 @@ class EnglishDictionaryService extends DictionaryService {
       await initializeDictionary();
     }
     dictionary.sort((a, b) => a.length.compareTo(b.length));
-    print(dictionary.first);
     return dictionary.first.length;
   }
 
