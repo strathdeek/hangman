@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hangman',
       theme: ThemeData(
-          primarySwatch: Colors.amber ,
+          primarySwatch: Colors.amber,
           textButtonTheme: TextButtonThemeData(
               style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.resolveWith(
@@ -39,7 +39,8 @@ class MyApp extends StatelessWidget {
       routes: {
         Constants.GameSetupPageRouteName: (context) => GameSetupPage(),
         Constants.StatisticsPageRouteName: (context) => StatisticsPage(),
-        Constants.GamePageRouteName: (context) => GamePage(5, 5, GameMode.normal),
+        Constants.GamePageRouteName: (context) =>
+            GamePage(5, 5, GameMode.normal),
       },
       home: MainPage(),
     );
