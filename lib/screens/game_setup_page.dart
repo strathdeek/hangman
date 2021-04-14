@@ -170,8 +170,12 @@ class _GameSetupPageState extends State<GameSetupPage> {
                         builder: (context) => GamePage(_guessCount.round(),
                             _letterCount.round(), _gameMode)));
               },
-              child:
-                  Container(alignment: Alignment.center, child: Text("Play")),
+              child: Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Play",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  )),
             ),
             Spacer(),
           ],
