@@ -49,10 +49,10 @@ class GameResultsDeleteFailed extends GameResultsState {
 class GameResultsLoaded extends GameResultsState {
   final List<GameResult> gameResults;
 
-  const GameResultsLoaded([this.gameResults = const []]);
+  const GameResultsLoaded([this.gameResults = const <GameResult>[]]);
 
   @override
-  List<Object> get props => [gameResults];
+  List<Object> get props => gameResults;
 
   @override
   String toString() => 'GameResultsLoaded { gameResults: $gameResults }';

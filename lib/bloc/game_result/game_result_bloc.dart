@@ -26,7 +26,7 @@ class GameResultBloc extends Bloc<GameResultEvent, GameResultsState> {
   Stream<GameResultsState> _mapGameResultsLoadedToState() async* {
     try {
       yield GameResultsLoading();
-      final gameResults = await gameResultsDataService.get();
+      final gameResults = await gameResultsDataService.get() ?? <GameResult>[];
       yield GameResultsLoaded(gameResults);
     } catch (e) {
       yield GameResultsLoadFailed(e.toString());

@@ -65,7 +65,10 @@ class _StatisticsPageState extends State<StatisticsPage>
     return BlocBuilder<GameResultBloc, GameResultsState>(
         builder: (context, state) {
       if (!(state is GameResultsLoaded)) {
-        return Text("loading");
+        return Scaffold(
+          body: Container(
+              alignment: Alignment.center, child: CircularProgressIndicator()),
+        );
       }
       final gameResults = (state as GameResultsLoaded).gameResults
         ..sort((a, b) => b.time.compareTo(a.time));

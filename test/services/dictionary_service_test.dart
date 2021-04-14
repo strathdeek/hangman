@@ -40,8 +40,7 @@ void main() {
         for (var i = 0; i < (numOfWords * 3); i++) {
           randomWords.add(await dictionaryService.getRandomWord(wordLength));
         }
-        print(randomWords.toSet().length / numOfWords);
-        expect(randomWords.toSet().length > (.9 * numOfWords), true);
+        expect(randomWords.toSet().length > (.75 * numOfWords), true);
       }
     });
   });

@@ -63,6 +63,16 @@ class CheatingHangmanService extends HangmanService {
     }
   }
 
+  // This method will attempt to select a word that contains the guessed letter.
+  //
+  // If there exist multiple possible words that contain the guessed letter,
+  // the method will attempt to select a word that contains the guessed letter
+  // at an index that is shared by the highest possible number of other words,
+  // thereby giving the algorithm the highest chance of finding another match word
+  // on the next iteration.
+  //
+  // If there are no possible words that contain the guess, this function will return
+  // the current word.
   Future<String> getEasiestPossibleWord(List<String> possibleTargetWords,
       String guess, String currentWord) async {
     //each entry in this map represents an index in the target word, and list of possible words

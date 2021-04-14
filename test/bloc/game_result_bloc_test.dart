@@ -6,22 +6,14 @@ import 'package:hangman/services/database/game_result_data_service.dart';
 import 'package:hangman/services/service_locater.dart';
 import 'package:mockito/mockito.dart';
 
+import 'dummy_game_results.dart';
+
 class MockGameResultDataService extends Mock implements GameResultDataService {}
 
 void main() {
   group('GameResultBloc', () {
     GameResultBloc gameResultBloc;
     GameResultDataService mockDataService;
-
-    var result1 = GameResult("test1", "aeiou", false, 5,
-        DateTime.fromMicrosecondsSinceEpoch(5), "1");
-    var result2 = GameResult(
-        "test2", "test2", true, 5, DateTime.fromMicrosecondsSinceEpoch(5), "2");
-    var result3 = GameResult("test3", "qwerty", false, 5,
-        DateTime.fromMicrosecondsSinceEpoch(5), "3");
-    var result4 = GameResult(
-        "test4", "test4", true, 5, DateTime.fromMicrosecondsSinceEpoch(5), "4");
-
     setUp(() {
       getIt.reset(dispose: true);
       mockDataService = MockGameResultDataService();
@@ -64,11 +56,11 @@ void main() {
         return gameResultBloc;
       },
       act: (GameResultBloc bloc) async =>
-          bloc..add(GameResultsLoad())..add(GameResultAdded(result1)),
+          bloc..add(GameResultsLoad())..add(GameResultAdded(dummyGameResult1)),
       expect: () => [
         GameResultsLoading(),
         GameResultsLoaded([]),
-        GameResultsLoaded([result1]),
+        GameResultsLoaded([dummyGameResult1]),
       ],
     );
 
@@ -81,12 +73,12 @@ void main() {
       },
       act: (GameResultBloc bloc) async => bloc
         ..add(GameResultsLoad())
-        ..add(GameResultAdded(result1))
-        ..add(GameResultDeleted(result1)),
+        ..add(GameResultAdded(dummyGameResult1))
+        ..add(GameResultDeleted(dummyGameResult1)),
       expect: () => [
         GameResultsLoading(),
         GameResultsLoaded([]),
-        GameResultsLoaded([result1]),
+        GameResultsLoaded([dummyGameResult1]),
         GameResultsLoaded([])
       ],
     );
@@ -100,19 +92,26 @@ void main() {
       },
       act: (GameResultBloc bloc) async => bloc
         ..add(GameResultsLoad())
-        ..add(GameResultAdded(result1))
-        ..add(GameResultAdded(result2))
-        ..add(GameResultAdded(result3))
-        ..add(GameResultAdded(result4))
-        ..add(GameResultDeleted(result1)),
+        ..add(GameResultAdded(dummyGameResult1))
+        ..add(GameResultAdded(dummyGameResult2))
+        ..add(GameResultAdded(dummyGameResult3))
+        ..add(GameResultAdded(dummyGameResult4))
+        ..add(GameResultDeleted(dummyGameResult1)),
       expect: () => [
         GameResultsLoading(),
         GameResultsLoaded([]),
-        GameResultsLoaded([result1]),
-        GameResultsLoaded([result1, result2]),
-        GameResultsLoaded([result1, result2, result3]),
-        GameResultsLoaded([result1, result2, result3, result4]),
-        GameResultsLoaded([result2, result3, result4]),
+        GameResultsLoaded([dummyGameResult1]),
+        GameResultsLoaded([dummyGameResult1, dummyGameResult2]),
+        GameResultsLoaded(
+            [dummyGameResult1, dummyGameResult2, dummyGameResult3]),
+        GameResultsLoaded([
+          dummyGameResult1,
+          dummyGameResult2,
+          dummyGameResult3,
+          dummyGameResult4
+        ]),
+        GameResultsLoaded(
+            [dummyGameResult2, dummyGameResult3, dummyGameResult4]),
       ],
     );
 
@@ -125,18 +124,24 @@ void main() {
       },
       act: (GameResultBloc bloc) async => bloc
         ..add(GameResultsLoad())
-        ..add(GameResultAdded(result1))
-        ..add(GameResultAdded(result2))
-        ..add(GameResultAdded(result3))
-        ..add(GameResultAdded(result4))
+        ..add(GameResultAdded(dummyGameResult1))
+        ..add(GameResultAdded(dummyGameResult2))
+        ..add(GameResultAdded(dummyGameResult3))
+        ..add(GameResultAdded(dummyGameResult4))
         ..add(GameResultDeleteAll()),
       expect: () => [
         GameResultsLoading(),
         GameResultsLoaded([]),
-        GameResultsLoaded([result1]),
-        GameResultsLoaded([result1, result2]),
-        GameResultsLoaded([result1, result2, result3]),
-        GameResultsLoaded([result1, result2, result3, result4]),
+        GameResultsLoaded([dummyGameResult1]),
+        GameResultsLoaded([dummyGameResult1, dummyGameResult2]),
+        GameResultsLoaded(
+            [dummyGameResult1, dummyGameResult2, dummyGameResult3]),
+        GameResultsLoaded([
+          dummyGameResult1,
+          dummyGameResult2,
+          dummyGameResult3,
+          dummyGameResult4
+        ]),
         GameResultsLoaded([]),
       ],
     );
@@ -150,21 +155,26 @@ void main() {
       },
       act: (GameResultBloc bloc) async => bloc
         ..add(GameResultsLoad())
-        ..add(GameResultAdded(result1))
+        ..add(GameResultAdded(dummyGameResult1))
         ..add(GameResultUpdated(GameResult(
             "newword",
-            result1.guesses,
-            result1.didWin,
-            result1.numberOfGuesses,
-            result1.time,
-            result1.id))),
+            dummyGameResult1.guesses,
+            dummyGameResult1.didWin,
+            dummyGameResult1.numberOfGuesses,
+            dummyGameResult1.time,
+            dummyGameResult1.id))),
       expect: () => [
         GameResultsLoading(),
         GameResultsLoaded([]),
-        GameResultsLoaded([result1]),
+        GameResultsLoaded([dummyGameResult1]),
         GameResultsLoaded([
-          GameResult("newword", result1.guesses, result1.didWin,
-              result1.numberOfGuesses, result1.time, result1.id)
+          GameResult(
+              "newword",
+              dummyGameResult1.guesses,
+              dummyGameResult1.didWin,
+              dummyGameResult1.numberOfGuesses,
+              dummyGameResult1.time,
+              dummyGameResult1.id)
         ]),
       ],
     );
