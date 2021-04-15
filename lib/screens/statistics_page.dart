@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hangman/bloc/blocs.dart';
 import 'package:hangman/models/game_result.dart';
 import 'package:hangman/widgets/bold_section_header.dart';
+import 'package:hangman/widgets/widgets.dart';
 import 'package:intl/intl.dart';
 
 class StatisticsPage extends StatefulWidget {
@@ -303,20 +304,26 @@ class StatisticsListItemWidget extends StatelessWidget {
         child: Container(
             padding: EdgeInsets.all(15),
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              HangmanDrawing(
+                size: Size(40, 80),
+                guesses: gameResult.guesses.characters
+                    .where((c) => !gameResult.word.contains(c))
+                    .length,
+                hasLost: !gameResult.didWin,
+                isThumbnail: true,
+              ),
+              Spacer(),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Word", style: TextStyle(fontWeight: FontWeight.bold)),
-                  Container(
-                      height: 55,
-                      width: 120,
-                      child: Text("${gameResult.word}")),
+                  Container(height: 55, child: Text("${gameResult.word}")),
                   Text("Date", style: TextStyle(fontWeight: FontWeight.bold)),
                   Text("${DateFormat.MMMd().format(gameResult.time)}")
                 ],
               ),
-              SizedBox(width: 30),
+              Spacer(),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,

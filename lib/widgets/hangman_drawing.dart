@@ -6,7 +6,13 @@ class HangmanDrawing extends StatelessWidget {
   final int guesses;
   final bool hasLost;
   final Size size;
-  const HangmanDrawing({Key key, this.guesses, this.hasLost = false, this.size})
+  final bool isThumbnail;
+  const HangmanDrawing(
+      {Key key,
+      this.guesses,
+      this.hasLost = false,
+      this.size,
+      this.isThumbnail = false})
       : super(key: key);
 
   @override
@@ -14,7 +20,7 @@ class HangmanDrawing extends StatelessWidget {
     return Container(
       child: CustomPaint(
         size: size,
-        painter: HangmanPainter(size, guesses, hasLost),
+        painter: HangmanPainter(size, guesses, hasLost, isThumbnail),
       ),
     );
   }
@@ -22,9 +28,7 @@ class HangmanDrawing extends StatelessWidget {
 
 class HangmanPainter extends CustomPainter {
   bool needsPainting = true;
-  Paint hangmanPaint = Paint()
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 5;
+  Paint hangmanPaint;
 
   double headSize;
   double eyeSize;
@@ -47,7 +51,7 @@ class HangmanPainter extends CustomPainter {
 
   List<Function(Canvas canvas)> drawingSteps;
 
-  HangmanPainter(Size size, this.guesses, this.hasLost) {
+  HangmanPainter(Size size, this.guesses, this.hasLost, bool isThumbnail) {
     var height = size.height;
     var width = size.width;
     double heightUnit = height / 6;
@@ -74,6 +78,10 @@ class HangmanPainter extends CustomPainter {
     );
     mouth = Offset(center - (headSize / 2), 1.5 * headSize);
     needsPainting = true;
+
+    hangmanPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = isThumbnail ? 2 : 5;
 
     drawingSteps = <Function(Canvas canvas)>[
       (canvas) => canvas.drawCircle(head, headSize, hangmanPaint),
