@@ -90,7 +90,7 @@ main() {
       ));
 
       await tester.pumpAndSettle();
-      final listViewItemFinder = find.byType(StatisticsListItemWidget);
+      final listViewItemFinder = find.byType(StatisticsListItem);
 
       expect(listViewItemFinder, findsNothing);
     });
@@ -149,7 +149,7 @@ main() {
       ));
 
       await tester.pumpAndSettle();
-      final finder = find.byType(StatisticsListItemWidget);
+      final finder = find.byType(StatisticsListItem);
 
       expect(finder, findsOneWidget);
     });

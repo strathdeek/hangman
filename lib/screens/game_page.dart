@@ -192,6 +192,8 @@ class _GamePageState extends State<GamePage> {
           child: Text("Quit"),
           onPressed: _navigateHome,
         ),
+        title: Text("Hangman",
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
           child: Stack(
