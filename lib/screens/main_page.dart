@@ -47,13 +47,13 @@ class _MainPageState extends State<MainPage> {
                 left: (screenWidth / 2) - 125,
               ),
               Positioned(
-                left: (screenWidth / 2) - 75,
+                left: (screenWidth / 2) - 100,
                 top: 500,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 150,
+                      width: 200,
                       height: 50,
                       child: ElevatedButton(
                           onPressed: _navigateToStartGame,
@@ -73,7 +73,7 @@ class _MainPageState extends State<MainPage> {
                       height: 20,
                     ),
                     Container(
-                      width: 150,
+                      width: 200,
                       height: 50,
                       child: ElevatedButton(
                           onPressed: _navigateToStatistics,

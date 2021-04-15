@@ -90,7 +90,6 @@ class _GamePageState extends State<GamePage> {
         _errorText =
             "'${_currentGuess.toUpperCase()}' has already been guessed.";
       });
-      guessFocusNode.requestFocus();
       return;
     }
     var newTargetWord = await getIt<HangmanService>().getNewWord(
