@@ -3,15 +3,18 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class HangmanDrawing extends StatelessWidget {
-  final double progress;
-  const HangmanDrawing({Key key, this.progress}) : super(key: key);
+  final int guesses;
+  final bool hasLost;
+  final Size size;
+  const HangmanDrawing({Key key, this.guesses, this.hasLost = false, this.size})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: CustomPaint(
-        size: Size(200, 200),
-        painter: HangmanPainter(200, progress),
+        size: size,
+        painter: HangmanPainter(size, guesses, hasLost),
       ),
     );
   }
@@ -39,25 +42,28 @@ class HangmanPainter extends CustomPainter {
   Offset rightEye;
   Offset mouth;
 
-  final double progress;
+  final int guesses;
+  final bool hasLost;
 
   List<Function(Canvas canvas)> drawingSteps;
 
-  HangmanPainter(double width, this.progress) {
-    double unit = width / 6;
+  HangmanPainter(Size size, this.guesses, this.hasLost) {
+    var height = size.height;
+    var width = size.width;
+    double heightUnit = height / 6;
     double center = width / 2;
-    headSize = unit;
+    headSize = heightUnit;
     eyeSize = headSize / 3;
     mouthSize = headSize / 3;
 
     head = Offset(center, headSize);
     neck = Offset(center, 2 * headSize);
-    shoulder = Offset(center, unit * 2.5);
-    hip = Offset(center, unit * 4.5);
-    leftHand = Offset(1.4 * unit, 3.5 * unit);
-    rightHand = Offset(4.6 * unit, 3.5 * unit);
-    leftFoot = Offset(1.7 * unit, width);
-    rightFoot = Offset(4.3 * unit, width);
+    shoulder = Offset(center, heightUnit * 2.5);
+    hip = Offset(center, heightUnit * 4.5);
+    leftHand = Offset(0, 3.5 * heightUnit);
+    rightHand = Offset(width, 3.5 * heightUnit);
+    leftFoot = Offset(0, height);
+    rightFoot = Offset(width, height);
     leftEye = Offset(
       (center - (headSize * .4)) - (eyeSize / 2),
       .5 * headSize,
@@ -98,18 +104,22 @@ class HangmanPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (progress == 0) {
+    if (guesses == 0) {
       return;
-    }
-    drawingSteps.forEach((element) {
-      if ((drawingSteps.indexOf(element) / drawingSteps.length) <= progress) {
-        element.call(canvas);
+    } else if (!hasLost) {
+      for (var i = 0; i < guesses && i < drawingSteps.length; i++) {
+        drawingSteps[i].call(canvas);
       }
-    });
+    } else {
+      drawingSteps.forEach((element) {
+        element.call(canvas);
+      });
+    }
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return (oldDelegate as HangmanPainter).progress != progress;
+    return ((oldDelegate as HangmanPainter).guesses != guesses) ||
+        ((oldDelegate as HangmanPainter).hasLost != hasLost);
   }
 }

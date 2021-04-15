@@ -51,7 +51,6 @@ class _GamePageState extends State<GamePage> {
   Future<void> _loadTargetWord(int numberOfLetters) async {
     var targetWord =
         await getIt<DictionaryService>().getRandomWord(numberOfLetters);
-    print(targetWord);
     setState(() {
       _targetWord = targetWord.toUpperCase();
     });
@@ -180,6 +179,12 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
+    double rawHeight = MediaQuery.of(context).size.height;
+    final viewInsets = EdgeInsets.fromWindowPadding(
+        WidgetsBinding.instance.window.viewInsets,
+        WidgetsBinding.instance.window.devicePixelRatio);
+    var safeAreaHeight = rawHeight - viewInsets.bottom;
+    var hangManDrawingHeight = safeAreaHeight - 375;
 
     return Scaffold(
       appBar: AppBar(
@@ -191,126 +196,127 @@ class _GamePageState extends State<GamePage> {
       body: SafeArea(
           child: Stack(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Spacer(),
-              HangmanDrawing(
-                progress: _currentGuesses / _totalGuesses,
+          Container(
+            alignment: Alignment.center,
+          ),
+          Positioned(
+            top: 5,
+            width: hangManDrawingHeight / 2,
+            left: (screenWidth / 2) - (hangManDrawingHeight / 4),
+            height: hangManDrawingHeight,
+            child: HangmanDrawing(
+              guesses: _currentGuesses,
+              hasLost: _currentGuesses == _totalGuesses,
+              size: Size(
+                hangManDrawingHeight / 2,
+                hangManDrawingHeight,
               ),
-              Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: Card(
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Column(
-                        children: [
-                          Wrap(
-                            children: _getTextList(_displayWord),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                              "Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Spacer(),
-              AnimatedContainer(
-                padding: EdgeInsets.symmetric(horizontal: 50),
-                curve: _animationCurve,
-                duration: _animationDuration,
-                child: Card(
-                  child: Container(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          width: screenWidth - 100,
-                          height: _keyboardActive ? 100 : 150,
-                          alignment: Alignment.center,
-                        ),
-                        Positioned(
-                          height: 100,
-                          width: 75,
-                          top: _keyboardActive ? 5 : 25,
-                          left: 10,
-                          child: TextField(
-                            buildCounter: (BuildContext context,
-                                    {int currentLength,
-                                    int maxLength,
-                                    bool isFocused}) =>
-                                null,
-                            textAlign: TextAlign.center,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.only(bottom: 40),
-                              border: OutlineInputBorder(),
-                            ),
-                            showCursor: false,
-                            onChanged: _trimTextInput,
-                            style: TextStyle(fontSize: 50),
-                            controller: guessController,
-                            onSubmitted: (String input) => _submitGuess(),
-                            focusNode: guessFocusNode,
-                          ),
-                        ),
-                        Positioned(
-                          top: _keyboardActive ? 5 : 25,
-                          left: 95,
-                          width: screenWidth - 205,
-                          child: Column(
-                            children: [
-                              Text(
-                                "Guesses:",
-                                style: TextStyle(fontSize: 25),
-                              ),
-                              Wrap(
-                                direction: Axis.horizontal,
-                                children: _lettersGuessed
-                                    .map((c) => Text(c,
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            color: _targetWord.contains(c)
-                                                ? Colors.green
-                                                : Colors.red)))
-                                    .toList(),
-                              ),
-                              Text(
-                                _errorText,
-                                style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              AnimatedContainer(
-                duration: _animationDuration,
-                curve: _animationCurve,
-                width: screenWidth,
-                height: _keyboardActive ? 75 : 0,
-              )
-            ],
+            ),
+            // duration: _animationDuration,
+            // curve: _animationCurve,
           ),
           AnimatedPositioned(
             duration: _animationDuration,
             curve: _animationCurve,
-            height: _keyboardActive ? 65 : 40,
-            width: _keyboardActive ? screenWidth - 10 : 150,
+            height: _keyboardActive ? 85 : 85,
+            width: screenWidth - 100,
+            bottom: _keyboardActive ? 145 : 155,
+            right: 50,
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    Wrap(
+                      children: _getTextList(_displayWord),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                        "Guesses Remaining: ${_totalGuesses - _currentGuesses}"),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: _animationDuration,
+            curve: _animationCurve,
+            height: _keyboardActive ? 100 : 150,
+            width: screenWidth - 100,
+            bottom: _keyboardActive ? 45 : 5,
+            right: 50,
+            child: Card(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  AnimatedPositioned(
+                    duration: _animationDuration,
+                    curve: _animationCurve,
+                    height: _keyboardActive ? 80 : 100,
+                    width: 75,
+                    top: _keyboardActive ? 5 : 25,
+                    left: 10,
+                    child: TextField(
+                      buildCounter: (BuildContext context,
+                              {int currentLength,
+                              int maxLength,
+                              bool isFocused}) =>
+                          null,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(bottom: 40),
+                        border: OutlineInputBorder(),
+                      ),
+                      showCursor: false,
+                      onChanged: _trimTextInput,
+                      style: TextStyle(fontSize: 50),
+                      controller: guessController,
+                      onSubmitted: (String input) => _submitGuess(),
+                      focusNode: guessFocusNode,
+                    ),
+                  ),
+                  Positioned(
+                    top: _keyboardActive ? 5 : 25,
+                    left: 95,
+                    width: screenWidth - 205,
+                    child: Column(
+                      children: [
+                        Text(
+                          "Guesses:",
+                          style: TextStyle(fontSize: 25),
+                        ),
+                        Wrap(
+                          direction: Axis.horizontal,
+                          children: _lettersGuessed
+                              .map((c) => Text(c,
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      color: _targetWord.contains(c)
+                                          ? Colors.green
+                                          : Colors.red)))
+                              .toList(),
+                        ),
+                        Text(
+                          _errorText,
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: _animationDuration,
+            curve: _animationCurve,
+            height: _keyboardActive ? 45 : 35,
+            width: _keyboardActive ? screenWidth - 2 : 150,
             bottom: _keyboardActive ? -5 : 15,
-            right: _keyboardActive ? 5 : 60,
+            right: _keyboardActive ? 1 : 60,
             child: ElevatedButton(
               onPressed: _submitGuess,
               child: Text(

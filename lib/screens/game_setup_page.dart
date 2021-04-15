@@ -11,10 +11,10 @@ class GameSetupPage extends StatefulWidget {
 }
 
 class _GameSetupPageState extends State<GameSetupPage> {
-  double _guessCount = 5;
-  int _letterCount = 5;
+  double _guessCount = 12;
+  int _letterCount = 6;
   int _minLetterCount = 1;
-  int _maxLetterCount = 10;
+  int _maxLetterCount = 14;
   List<int> _allowedLengths;
   String _errorMessage = "";
   GameMode _gameMode = GameMode.normal;
@@ -31,7 +31,7 @@ class _GameSetupPageState extends State<GameSetupPage> {
     _allowedLengths = await getIt<DictionaryService>().getPossibleWordLengths();
     setState(() {
       _minLetterCount = min;
-      _maxLetterCount = max;
+      _maxLetterCount = max <= 14 ? max : 14;
     });
   }
 
@@ -48,7 +48,10 @@ class _GameSetupPageState extends State<GameSetupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber,
+        title: Text(
+          "Create New Game",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
       ),
       body: Container(
         alignment: Alignment.center,
@@ -70,9 +73,9 @@ class _GameSetupPageState extends State<GameSetupPage> {
                     Expanded(
                       child: Slider(
                         value: _guessCount,
-                        max: 10,
+                        max: 12,
                         min: 1,
-                        divisions: 10,
+                        divisions: 12,
                         label: _guessCount.round().toString(),
                         onChanged: (double value) {
                           setState(() {
@@ -114,6 +117,7 @@ class _GameSetupPageState extends State<GameSetupPage> {
                 style:
                     TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
             Spacer(),
+            BoldSectionHeader("Difficulty"),
             Card(
               child: Padding(
                 padding: EdgeInsets.all(15),
@@ -159,6 +163,7 @@ class _GameSetupPageState extends State<GameSetupPage> {
                 ),
               ),
             ),
+            Spacer(),
             ElevatedButton(
               onPressed: () {
                 if (!_allowedLengths.contains(_letterCount)) {

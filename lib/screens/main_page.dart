@@ -20,7 +20,6 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          color: Colors.white,
           alignment: Alignment.topCenter,
           child: Column(
             children: [
